@@ -11,6 +11,8 @@ Mainwin::Mainwin() :store{nullptr} {
     store = new Store{};
     set_default_size(800, 800);
     set_title("ELSA");
+
+
     
     
     // Put a vertical box container as the Window contents
@@ -32,6 +34,8 @@ Mainwin::Mainwin() :store{nullptr} {
     //////////////
     //VIEW menu item
     /////////////
+
+
     Gtk::MenuItem *menuitem_view = Gtk::manage(new Gtk::MenuItem("_View", true));
     menubar->append(*menuitem_view);
     Gtk::Menu *viewmenu = Gtk::manage(new Gtk::Menu());
@@ -95,31 +99,58 @@ Mainwin::Mainwin() :store{nullptr} {
     menuitem_about->signal_activate().connect([this] {this->on_about_click();});
     helpmenu->append(*menuitem_about);
 
+  
+    data= Gtk::manage(new Gtk::Label());
+    data->set_hexpand(true);
+    data->set_vexpand(true);
+    vbox->add(*data);
+    set_data("WELCOME TO MY STORE FOR SPRINT 2");
 
+    
+
+     msg = Gtk::manage(new Gtk::Label());
+    msg->set_hexpand(true);
+    vbox->pack_start(*msg, Gtk::PACK_SHRINK, 0);
     vbox->show_all();
 }
 //VIEW
 void Mainwin::on_view_peripheral_click()
 {
+     std::ostringstream oss;
+     oss<<"PERIPHERAL LIST:\n\n";
 
+            for(int i=0; i<store->num_options(); ++i) 
+              oss<< i << ") " << store->option(i) << "\n";
+                set_data(oss.str());
 }
 
 void Mainwin::on_view_desktop_click()
 {
-
+    std::ostringstream oss;
+    oss<<"DESKTOP LIST:\n\n";
+      for(int i=0; i<store->num_desktops(); ++i) 
+                    oss<< i << ") " << store->desktop(i) << "\n";
+    set_data(oss.str());
 }
 void Mainwin::on_view_customer_click()
 {
-         std::stringstream oss ;
+       std::ostringstream oss;
+       oss<<"CUSTOMER LIST:\n\n";
         for(int i=0; i<store->num_customers(); ++i) 
         {
-                oss << i << ") " << store->customer(i) << "\n";
-                set_data(oss.str());
+                oss << i << ") " << store->customer(i) << "\n";      
         }
+   
+        set_data(oss.str());
+     
 }
 void Mainwin::on_view_order_click()
 {
-
+    std::ostringstream oss;
+    oss <<"ORDER PLACED:\n\n";
+    for(int i=0; i<store->num_orders(); ++i) 
+     oss<< i << ") " << store->order(i) << "\n";
+     set_data(oss.str());
 }
 void Mainwin::on_quit_click()
 {
@@ -167,6 +198,7 @@ void Mainwin::on_insert_order_click()
 }
 void Mainwin::on_insert_customer_click()
 {
+    
     std::string name = "Customer Name";
     std::string email = "Customer Email";
     std::string phone="Customer Phone";
@@ -203,7 +235,7 @@ std::string Mainwin::get_string(std::string prompt)
     edialog.set_text("Type answer here");
     edialog.run();
 
-  Gtk::MessageDialog mdialog{*this, edialog.get_text()};
+  Gtk::MessageDialog mdialog{*this, "Thank you for your response"};
    mdialog.run();
      return edialog.get_text();
 
@@ -223,8 +255,9 @@ int Mainwin::get_int(std::string prompt)
 Mainwin::~Mainwin() { }
 void Mainwin::set_data(std::string s)
 {
-   data = Gtk::manage(new Gtk::Label());
-   data->set_hexpand(true);
-   data->set_vexpand(true);
-    vbox->add(*data);
+   data->set_text(s);
+}
+void Mainwin::set_msg(std::string s)
+{
+   msg->set_text(s);
 }
