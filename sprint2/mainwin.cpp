@@ -104,7 +104,7 @@ Mainwin::Mainwin() :store{nullptr} {
     data->set_hexpand(true);
     data->set_vexpand(true);
     vbox->add(*data);
-    set_data("WELCOME TO MY STORE FOR SPRINT 2");
+    set_data("WELCOME TO MY STORE FOR SPRINT 2\n\n\nHow can i help you today?");
 
     
 
