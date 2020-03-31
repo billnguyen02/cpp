@@ -12,8 +12,6 @@ Mainwin::Mainwin() :store{nullptr} {
     set_default_size(800, 800);
     set_title("ELSA");
 
-
-    
     
     // Put a vertical box container as the Window contents
     Gtk::Box *vbox = Gtk::manage(new Gtk::VBox);
@@ -104,7 +102,7 @@ Mainwin::Mainwin() :store{nullptr} {
     data->set_hexpand(true);
     data->set_vexpand(true);
     vbox->add(*data);
-    set_data("WELCOME TO MY STORE FOR SPRINT 2\n\n\nHow can i help you today?");
+    set_data("WELCOME TO MY STORE FOR SPRINT 2\n\nHow can i help you today?");
 
     
 
@@ -216,7 +214,8 @@ void Mainwin::on_about_click()
     Gtk::AboutDialog dialog;
     dialog.set_transient_for(*this); // Avoid the discouraging warning
     dialog.set_program_name("ELSA");
-
+    auto logo = Gdk::Pixbuf::create_from_file("store.jpeg");
+    dialog.set_logo(logo);
     dialog.set_version("Version 0");
     dialog.set_copyright("Copyright 2020");
     dialog.set_license_type(Gtk::License::LICENSE_GPL_3_0);
