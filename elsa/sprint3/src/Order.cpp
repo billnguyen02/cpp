@@ -1,6 +1,7 @@
 
 #include "Order.h"
-
+// #include <iostream>
+ #include <sstream>
 Order::Order(Customer& add_customer) : _customer{add_customer}
 {
     //Constructor 
@@ -26,12 +27,22 @@ double Order::price()
 }
 std::ostream& operator<<(std::ostream& ost, const Order& add_order)
 {   
-    ost<<"CUSTOMER ORDER: \n";
-    for(Desktop*  ptr_order: add_order._products)
+   
+    ost << "Customer: " << add_order._customer;
+    for(auto p : add_order._products) ost << "\n  " << *p << "\n  Price: $" << p->price() << "\n";
+    
+    return ost;
+
+   
+}
+void Order::save(std::ostream& ost)
+{
+    
+    ost << _products.size()<<std::endl;
+    ost << _customer<<std::endl;
+    for(Desktop*  ptr_order: _products)
     {
         ost << *ptr_order << "\n";
     }
-    ost<<"CONTACT INFO: \n"<<add_order._customer;
-    return ost;
-   
 }
+

@@ -13,6 +13,9 @@ class Desktop
         void add_option(Options& add_options);
         friend std::ostream& operator<<(std::ostream& ost, const Desktop& desktop);
         double price();
+        void save(std::ostream& ost);
+        Desktop(std::istream& ist);
+        Desktop();
     private:
         std::vector< Options*> _options;
 };

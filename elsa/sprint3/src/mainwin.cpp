@@ -305,11 +305,15 @@ void Mainwin::set_msg(std::string s)
 {
    msg->set_markup(s);
 }
-void Mainwin::on_new_store_click(){}
+void Mainwin::on_new_store_click()
+{
+    delete store;
+    store = new Store{};
+}
 void Mainwin::on_save_click(){
          try {
              
-            std::ofstream ofs{get_filename()};
+            std::ofstream ofs{filename};
             store->save(ofs);
             
             if(!ofs) throw std::runtime_error{"Error writing file"};

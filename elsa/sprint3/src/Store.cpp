@@ -43,27 +43,81 @@ Order& Store::order(int index) {return orders.at(index);}
 
 void Store::save(std::ostream& ost) {
     ost<<customers.size()<<std::endl;
+    int i;
     int size = customers.size();
-    for(int i = 0;i<size;i++)
+    for(i = 0;i<size;i++)
         customers.at(i).save(ost);
+    // DESKTOPS
+    ost<<options.size()<<std::endl;
+    int size2 = options.size();
+    for(i = 0; i<size2;i++)
+    {
+        options.at(i)->save(ost);       
+    }
+    //DESKTOPS
+    ost<<desktops.size()<<std::endl;
+    int size_desktop = desktops.size();
+    for(i =0 ; i<size_desktop; i++)
+    {
+        desktops.at(i).save(ost);
+       
+    }
+    /* ost<<orders.size()<<std::endl;
+    int size_order = orders.size();
+    for(i = 0; i < size_order; i++)
+    {
+        orders.at(i).save(ost);
+    } */
 }
 Store::Store(){}
 Store::Store(std::istream& ist){
     int size ;
     ist >> size;
     ist.ignore(32767,'\n');
-    if(size == 0)
+
+    //CUSTOMER
+    if(size != 0)
     {
-        Customer customer{ist};
-        customers.push_back(customer);
-        if(!ist) throw std::runtime_error("HAHA");
+            for(int i = 0;i<size;i++)
+            {
+                Customer customer{ist};
+                customers.push_back(customer);
+                if(!ist) throw std::runtime_error("HAHA");
+            }
     }
-    for(int i = 0;i<size;i++)
+    // OPTIONS
+
+    int size2 ;
+    ist >> size2;
+    ist.ignore(32767,'\n');
+
+    if (size2 !=0 )
     {
-        Customer customer{ist};
-        customers.push_back(customer);
-        if(!ist) throw std::runtime_error("HAHA");
+        for ( int i = 0 ; i<size2;i++)
+        {
+            Options* Option = new Options {ist};
+            options.push_back(Option);
+            if(!ist) throw std::runtime_error("HAHA");
+        }
     }
+    int size_desktop;
+    //DESKTOP
+    ist >> size_desktop;
+     ist.ignore(32767,'\n');
+    if (size_desktop != 0)
+    {
+        for(int i = 0; i < size_desktop; i ++)
+        {
+            Desktop desktop {ist};
+            desktops.push_back(desktop);
+            if(!ist) throw std::runtime_error("HAHA");
+        }
+    }
+
+    //ORDER
+
+
+
     
 }
 
