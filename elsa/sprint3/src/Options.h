@@ -17,7 +17,6 @@ class Options
         friend std::ostream& operator<<(std::ostream& ost, const Options& add_option);
         void save(std::ostream& ost);
         Options(std::istream& ist);
-
 };
 
 

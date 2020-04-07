@@ -2,10 +2,9 @@
 #include "Order.h"
 // #include <iostream>
  #include <sstream>
-Order::Order(Customer& add_customer)
+Order::Order(Customer& add_customer):_customer{&add_customer}
 {
-      Customer* customer = new Customer{add_customer};
-     _customer = customer;
+    
 
 }
 Order::~Order()
@@ -41,10 +40,14 @@ std::ostream& operator<<(std::ostream& ost, const Order& add_order)
 void Order::save(std::ostream& ost)
 {
     ost << _products.size()<<std::endl;
+    int size;
+    size = _products.size();
+     
+
     ost << *_customer;
-    for(Desktop*  ptr_order: _products)
+    for(int i = 0; i<size ; i++)
     {
-        ost << *ptr_order << "\n";
+        ost << *_products.at(i);
     }
 }
 Order::Order(std::istream& ist)
@@ -59,26 +62,30 @@ Order::Order(std::istream& ist)
         getline(ist,name);
         getline(ist,email);
         getline(ist,phone);
-        Customer* customer = new Customer{name,email,text}; 
-     
+        Customer customer {name,email,phone}; 
+        Customer* ptr_customer = new Customer{customer};
+        _customer = ptr_customer;
 
-        Order order(*customer);
+        
 
-        for( int k = 0; k < product_size ; k++)
-         {
-             std::string d_list,option,cost;
-             getline(ist,d_list);
-             getline(ist,option);
-             getline(ist,cost);
+         for( int k = 0; k < product_size ; k++)
+          {
+              std::string d_list,option,cost,line,line2;
+              getline(ist,d_list);
+              getline(ist,line);
+              //getline(ist,line2);
+              std::stringstream os;
+              os << line;
+              os >> option >> cost;
+              double val;
+              val = std::stod(cost);
 
-             double val;
-             val = std::stod(cost);
-             Options* o= new Options{name,val};
-             Desktop desktop;
-             desktop.add_option(*o);
-             Desktop* ptr_desktop = &desktop;
-             _products.push_back(ptr_desktop);
-         }
+              Options* o= new Options{option,val};
+              Desktop desktop;
+              desktop.add_option(*o);
+              Desktop* ptr_desktop = new Desktop{desktop};
+              _products.push_back(ptr_desktop);
+          }
         //_products.push_back(customer);
     
 }

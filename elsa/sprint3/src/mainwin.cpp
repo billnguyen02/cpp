@@ -186,8 +186,8 @@ void Mainwin::on_insert_peripheral_click()
     std::string e_cost = get_string(num);
     double cost = get_double(e_cost);
     Options option{e_name,cost};
-  
     store->add_option(option);
+  
     on_view_peripheral_click();
 }
 
@@ -205,7 +205,8 @@ void Mainwin::on_insert_desktop_click()
          } 
     catch(std::exception& e) 
             {
-                std::cerr << "#### INVALID OPTION ####\n\n";
+                Gtk::MessageDialog{*this, "#### INVALID OPTION ####\n\n"}.run();
+                
              }
     }
     on_view_desktop_click();
@@ -218,8 +219,11 @@ void Mainwin::on_insert_order_click()
     std::string ans = get_string(text);
     int val = get_int(ans);
     if(val== -1) return;
-
-     int order = store->new_order(val);
+    int order;
+    
+     order = store->new_order(val);
+        
+ 
      on_view_desktop_click();
       while(true) {
         std::string TEXT = "Desktop (-1 when done)?";
@@ -228,6 +232,7 @@ void Mainwin::on_insert_order_click()
 
         if(val == -1) break;
         store->add_desktop(val, order);
+        
     }    
     
       
@@ -246,8 +251,8 @@ void Mainwin::on_insert_customer_click()
     Customer customer{Name,Phone,Email};
  
     
-
     store->add_customer(customer);
+   
     on_view_customer_click();
     set_msg("Added customer " + Name);
     
@@ -278,21 +283,26 @@ std::string Mainwin::get_string(std::string prompt)
     edialog.set_text("Type answer here");
     edialog.run();
 
-  Gtk::MessageDialog mdialog{*this, "Thank you for your response"};
-   mdialog.run();
-     return edialog.get_text();
+    Gtk::MessageDialog mdialog{*this, "Thank you for your response"};
+    mdialog.run();
+    return edialog.get_text();
 
 }
-double Mainwin::get_double(std::string prompt)
-{
-    double value = std::stod(prompt);
-    return value;
+double Mainwin::get_double(std::string prompt) {
+    try {
+        return std::stod(prompt);
+    } catch(std::exception& e) {
+        
+        return -1.0;
+    }
 }
-
-int Mainwin::get_int(std::string prompt)
-{
-    int value = std::stoi(prompt);
-    return value;
+int Mainwin::get_int(std::string prompt) {
+    try {
+        return std::stoi(prompt);
+    } catch(std::exception& e) {
+        
+        return -1;
+    }
 }
 
 Mainwin::~Mainwin() { }
