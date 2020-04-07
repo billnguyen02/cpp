@@ -15,6 +15,8 @@ class Mainwin : public Gtk::Window
 		Gtk::Label* msg;
 		std::string filename;
     protected:
+		void on_disk_click();
+		void on_CPU_click();
 		void on_new_store_click();
 		void on_save_click();
 		void on_save_as_click();

@@ -120,6 +120,13 @@ Mainwin::Mainwin() :store{new Store} {
     menuitem_about->signal_activate().connect([this] {this->on_about_click();});
     helpmenu->append(*menuitem_about);
 
+    Gtk::MenuItem *menuitem_CPU = Gtk::manage(new Gtk::MenuItem("_BONUS CPU DATA", true));
+    menuitem_CPU->signal_activate().connect([this] {this->on_CPU_click();});
+    helpmenu->append(*menuitem_CPU);
+
+    Gtk::MenuItem *menuitem_disk = Gtk::manage(new Gtk::MenuItem("_BONUS DISK DATA", true));
+    menuitem_disk->signal_activate().connect([this] {this->on_disk_click();});
+    helpmenu->append(*menuitem_disk);
   
     data = Gtk::manage(new Gtk::Label{"", Gtk::ALIGN_START, Gtk::ALIGN_START});
     data->set_hexpand(true);
@@ -132,9 +139,48 @@ Mainwin::Mainwin() :store{new Store} {
      msg = Gtk::manage(new Gtk::Label());
     msg->set_hexpand(true);
     vbox->pack_start(*msg, Gtk::PACK_SHRINK, 0);
+  Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
+    data->set_hexpand();
+    data->override_background_color(Gdk::RGBA("yellow"));
+    vbox->add(*data);
     vbox->show_all();
 }
 //VIEW
+void Mainwin::on_disk_click()
+{   Options o{"CLOUD 10TB", 2423.47};                      store->add_option(o);
+    o = Options{"0.5 TB SSD", 79.99};                      store->add_option(o);
+    o = Options{"1 TB SSD", 109.99};                       store->add_option(o);
+    o = Options{"2 TB SSD", 229.99};                       store->add_option(o);
+    o = Options{"4 TB SSD", 599.99};                       store->add_option(o);
+
+    o = Options{"1 TB PC Disk", 44.83};                    store->add_option(o);
+    o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
+    o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
+}
+void Mainwin::on_CPU_click()
+{
+    Options o{"CPU: 2.6 GHz Xeon 6126T", 2423.47};         store->add_option(o);
+    o = Options{"CPU: 2.4 GHz Core i7-8565U", 388.0};      store->add_option(o);
+    o = Options{"CPU: 2.2 GHz AMD Opteron", 37.71};        store->add_option(o);
+    o = Options{"CPU: 300 MHz AM3351BZCEA30R ARM", 11.03}; store->add_option(o);
+    o = Options{"CPU: 240 MHz ColdFire MCF5", 17.33};      store->add_option(o);
+
+    o = Options{"2 GB RAM", 17.76};                        store->add_option(o);
+    o = Options{"4 GB RAM", 22.95};                        store->add_option(o);
+    o = Options{"8 GB RAM", 34.99};                        store->add_option(o);
+    o = Options{"16 GB RAM", 92.99};                       store->add_option(o);
+    o = Options{"32 GB RAM", 134.96};                      store->add_option(o);
+    o = Options{"64 GB RAM", 319.99};                      store->add_option(o);
+    o = Options{"0.5 TB SSD", 79.99};                      store->add_option(o);
+    o = Options{"1 TB SSD", 109.99};                       store->add_option(o);
+    o = Options{"2 TB SSD", 229.99};                       store->add_option(o);
+    o = Options{"4 TB SSD", 599.99};                       store->add_option(o);
+
+    o = Options{"1 TB PC Disk", 44.83};                    store->add_option(o);
+    o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
+    o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
+
+}
 void Mainwin::on_view_peripheral_click()
 {
      std::ostringstream oss;
@@ -246,30 +292,54 @@ void Mainwin::on_insert_desktop_click()
 }
 void Mainwin::on_insert_order_click()
 {    
-    on_view_customer_click();
-    std::string text = "Customer @index? (-1 to return)";
-    std::string ans = get_string(text);
-    int val = get_int(ans);
-    if(val== -1) return;
-    int order;
-    
-     order = store->new_order(val);
-        
- 
-     on_view_desktop_click();
-      while(true) {
-        std::string TEXT = "Desktop (-1 when done)?";
-        std::string desktop = get_string(TEXT);
-        int val = get_int(desktop);
 
-        if(val == -1) break;
-        store->add_desktop(val, order);
-        
-    }    
-    
+       on_view_customer_click(); // SHOW THE CONTENT OF CUSTOMER
+
+     Gtk::Dialog dialog{"INSERT ORDER", *this};
+    Gtk::Grid grid;
+    Gtk::Label l_cnum{"Customer @index"};
+    Gtk::Entry e_cnum;               // Accept any line of text
+
+    grid.attach(l_cnum, 0, 1, 1, 1);
+    grid.attach(e_cnum, 1, 1, 2, 1);
+
+    Gtk::Label l_dnum{"Desktop @index"};
+    Gtk::Entry e_dnum;               // Accept any line of text
+
+    grid.attach(l_dnum, 0, 2, 1, 1);
+    grid.attach(e_dnum, 1, 2, 2, 1);
+
+    // Now add the grid to the dialog's VBox (called its "content area")
+    dialog.get_content_area()->add(grid);
+
+ 
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+    dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+    int response;
+    dialog.show_all();
+    while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
+    if((response = dialog.run()) == Gtk::RESPONSE_OK){on_view_order_click();}
       
-    on_view_order_click();
-     set_msg("Added order " + std::to_string(order) + " for $" + std::to_string(store->order(order).price()));
+     if (e_cnum.get_text().size() == 0) {e_cnum.set_text("*required*"); continue;}
+    else if (e_dnum.get_text().size() == 0) {e_dnum.set_text("*required*"); on_view_desktop_click(); continue;}
+        
+    std::string c_num = e_cnum.get_text();
+    on_view_desktop_click(); // SHOW THE CONTENT OF DESKTOP
+    std::string d_num  = e_dnum.get_text();
+
+    int cus_num = get_int(c_num);
+    int des_num = get_int(d_num);
+    if(cus_num || des_num == -1){break;};
+    int order;
+     order = store->new_order(cus_num);
+    store->add_desktop(cus_num,order);
+    
+    }
+
+
+
+
 }
 void Mainwin::on_insert_customer_click()
 {
