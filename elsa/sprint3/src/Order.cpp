@@ -57,7 +57,7 @@ Order::Order(std::istream& ist)
     ist >> product_size;
     ist.ignore(32767,'\n');
 
-         std::string text,name,email,phone;
+        std::string text,name,email,phone;
         getline(ist,text);
         getline(ist,name);
         getline(ist,email);
@@ -65,14 +65,14 @@ Order::Order(std::istream& ist)
         Customer customer {name,email,phone}; 
         Customer* ptr_customer = new Customer{customer};
         _customer = ptr_customer;
-
+    for(int j = 0 ; j < product_size; j++){
         std::string num_string;
         getline(ist,num_string);
         int num = stoi(num_string);
         std::string d_list;
         getline(ist,d_list);
         Desktop desktop;
-        
+       
          for( int k = 0; k < num ; k++)
           {
               std::string option,cost,line,line2;
@@ -94,7 +94,7 @@ Order::Order(std::istream& ist)
                 _products.push_back(ptr_desktop);
               }
           }
-          
+    }
         //_products.push_back(customer);
     
 }
