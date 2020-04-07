@@ -1,19 +1,18 @@
+
 #include "mainwin.h"
 #include <sstream>
 #include "entrydialog.h"
 #include <iostream> // for std::cerr logging
 #include <iomanip>
-#include <fstream>
 
-Mainwin::Mainwin() :store{new Store} {
+Mainwin::Mainwin() :store{nullptr} {
 
     // /////////////////
     // G U I   S E T U P
     // /////////////////
-   
+    store = new Store{};
     set_default_size(800, 800);
     set_title("ELSA");
-   
 
     
     // Put a vertical box container as the Window contents
@@ -28,26 +27,8 @@ Mainwin::Mainwin() :store{new Store} {
     Gtk::Menu *filemenu = Gtk::manage(new Gtk::Menu());
     menuitem_file->set_submenu(*filemenu);
 
-        Gtk::MenuItem *menuitem_new = Gtk::manage(new Gtk::MenuItem("_New", true));
-    menuitem_new->signal_activate().connect([this] {this->on_new_store_click();});
-    filemenu->append(*menuitem_new);
 
-    //         S A V E   G A M E
-    // Append Save As... to the File menu
-    Gtk::MenuItem *menuitem_save = Gtk::manage(new Gtk::MenuItem("_Save ", true));
-    menuitem_save->signal_activate().connect([this] {this->on_save_click();});
-    filemenu->append(*menuitem_save);
-    //         S A V E ---- A S
-    Gtk::MenuItem *menuitem_save_as = Gtk::manage(new Gtk::MenuItem("Save _As", true));
-    menuitem_save_as->signal_activate().connect([this] {this->on_save_as_click();});
-    filemenu->append(*menuitem_save_as);
-
-    //         O P E N   G A M E
-    // Append Open... to the File menu
-    Gtk::MenuItem *menuitem_open = Gtk::manage(new Gtk::MenuItem("_Open", true));
-    menuitem_open->signal_activate().connect([this] {this->on_open_click();});
-    filemenu->append(*menuitem_open);
-    //// QUIT
+    
     Gtk::MenuItem *menuitem_quit = Gtk::manage(new Gtk::MenuItem("_Quit", true));
     menuitem_quit->signal_activate().connect([this] {this->on_quit_click();});
     filemenu->append(*menuitem_quit);
@@ -125,7 +106,7 @@ Mainwin::Mainwin() :store{new Store} {
     data->set_hexpand(true);
     data->set_vexpand(true);
     vbox->add(*data);
-    set_data("WELCOME TO MY STORE FOR SPRINT 3\n\nHow can i help you today?");
+    set_data("WELCOME TO MY STORE FOR SPRINT 2\n\nHow can i help you today?");
 
     
 
@@ -222,7 +203,7 @@ void Mainwin::on_insert_order_click()
      int order = store->new_order(val);
      on_view_desktop_click();
       while(true) {
-        std::string TEXT = "Desktop (-1 when done)?";
+          std::string TEXT = "Desktop (-1 when done)?";
         std::string desktop = get_string(TEXT);
         int val = get_int(desktop);
 
@@ -303,93 +284,4 @@ void Mainwin::set_data(std::string s)
 void Mainwin::set_msg(std::string s)
 {
    msg->set_markup(s);
-}
-void Mainwin::on_new_store_click()
-{
-    delete store;
-    store = new Store{};
-}
-void Mainwin::on_save_click(){
-         try {
-             
-            std::ofstream ofs{filename};
-            store->save(ofs);
-            
-            if(!ofs) throw std::runtime_error{"Error writing file"};
-        } catch(std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to save file: "}.run();
-}
-}
-void Mainwin::on_save_as_click()
-{
-    Gtk::FileChooserDialog dialog("Please choose a file",
-    Gtk::FileChooserAction::FILE_CHOOSER_ACTION_SAVE);
-    dialog.set_transient_for(*this);
-
-    auto filter_elsa = Gtk::FileFilter::create();
-    filter_elsa->set_name("ELSA files");
-    filter_elsa->add_pattern("*.elsa");
-    dialog.add_filter(filter_elsa);
- 
-    auto filter_any = Gtk::FileFilter::create();
-    filter_any->set_name("Any files");
-    filter_any->add_pattern("*");
-    dialog.add_filter(filter_any);
-    
-    dialog.set_filename(filename);
-
-    //Add response buttons the the dialog:
-    dialog.add_button("_Cancel", 0);
-    dialog.add_button("_Save", 1);
-    int result = dialog.run();
-      
-    if (result == 1) {
-        try {
-            std::ofstream ofs{dialog.get_filename()};
-            store->save(ofs);
-            
-            if(!ofs) throw std::runtime_error{"Error writing file"};
-        } catch(std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to save file: "}.run();
-        }
-    
-    }
-}
-void Mainwin::on_open_click(){
-   Gtk::FileChooserDialog dialog("Please choose a file",
-          Gtk::FileChooserAction::FILE_CHOOSER_ACTION_OPEN);
-    dialog.set_transient_for(*this);
-
-    auto filter_elsa = Gtk::FileFilter::create();
-    filter_elsa->set_name("ELSA files");
-    filter_elsa->add_pattern("*.elsa");
-    dialog.add_filter(filter_elsa);
- 
-    auto filter_any = Gtk::FileFilter::create();
-    filter_any->set_name("Any files");
-    filter_any->add_pattern("*");
-    dialog.add_filter(filter_any);
-
-    dialog.set_filename(filename);
-
-    //Add response buttons the the dialog:
-    dialog.add_button("_Cancel", 0);
-    dialog.add_button("_Open", 1);
-
-    int result = dialog.run();
-
-    if (result == 1) {
-        try {
-            //delete store;
-            std::ifstream ifs{dialog.get_filename()};
-            store = new Store{ifs};
-            if(!ifs) throw std::runtime_error{"File contents bad"};
-
-        } catch (std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to open elsa"}.run();
-        }
-    }
-
-
-      
 }

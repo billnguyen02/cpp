@@ -18,7 +18,6 @@ std::ostream& operator<<(std::ostream& ost, const Desktop& desktop)
         ost << *ptr_option << "\n";
     }
     
- 
     return ost;
 }
 
@@ -46,8 +45,8 @@ Desktop::Desktop(std::istream& ist)
         ist.ignore(32767,'\n');
         for(int i = 0;i< size; i++)
         {
-        std::string text;
-        getline(ist,text); 
+            std::string text;
+            getline(ist,text); 
        //ist >>text;
        
             std::string name;
@@ -60,7 +59,6 @@ Desktop::Desktop(std::istream& ist)
             _options.push_back(options);
         }
            
-        
 }
 
 

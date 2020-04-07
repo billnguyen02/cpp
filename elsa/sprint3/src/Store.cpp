@@ -47,7 +47,7 @@ void Store::save(std::ostream& ost) {
     int size = customers.size();
     for(i = 0;i<size;i++)
         customers.at(i).save(ost);
-    // DESKTOPS
+     // DESKTOPS
     ost<<options.size()<<std::endl;
     int size2 = options.size();
     for(i = 0; i<size2;i++)
@@ -61,13 +61,13 @@ void Store::save(std::ostream& ost) {
     {
         desktops.at(i).save(ost);
        
-    }
-    /* ost<<orders.size()<<std::endl;
+    } 
+    ost<<orders.size()<<std::endl;
     int size_order = orders.size();
     for(i = 0; i < size_order; i++)
     {
         orders.at(i).save(ost);
-    } */
+    } 
 }
 Store::Store(){}
 Store::Store(std::istream& ist){
@@ -113,8 +113,21 @@ Store::Store(std::istream& ist){
             if(!ist) throw std::runtime_error("HAHA");
         }
     }
+       //ORDER
+    int size_order;
+    ist >> size_order;
+    ist.ignore(32767,'\n');
+    if (size_order != 0)
+    {
+        for(int i = 0; i < size_order; i ++)
+        {
+            Order o{ist};
+            orders.push_back(o);
+            if(!ist) throw std::runtime_error("HAHA");
+        }
+    }  
 
-    //ORDER
+ 
 
 
 

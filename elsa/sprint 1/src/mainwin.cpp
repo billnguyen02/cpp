@@ -2,19 +2,16 @@
 #include <sstream>
 #include "entrydialog.h"
 #include <iostream> // for std::cerr logging
-#include <iomanip>
-#include <fstream>
 
-Mainwin::Mainwin() :store{new Store} {
+Mainwin::Mainwin() :store{nullptr} {
 
     // /////////////////
     // G U I   S E T U P
     // /////////////////
-   
+    store = new Store{};
     set_default_size(800, 800);
     set_title("ELSA");
-   
-
+    
     
     // Put a vertical box container as the Window contents
     Gtk::Box *vbox = Gtk::manage(new Gtk::VBox);
@@ -28,26 +25,6 @@ Mainwin::Mainwin() :store{new Store} {
     Gtk::Menu *filemenu = Gtk::manage(new Gtk::Menu());
     menuitem_file->set_submenu(*filemenu);
 
-        Gtk::MenuItem *menuitem_new = Gtk::manage(new Gtk::MenuItem("_New", true));
-    menuitem_new->signal_activate().connect([this] {this->on_new_store_click();});
-    filemenu->append(*menuitem_new);
-
-    //         S A V E   G A M E
-    // Append Save As... to the File menu
-    Gtk::MenuItem *menuitem_save = Gtk::manage(new Gtk::MenuItem("_Save ", true));
-    menuitem_save->signal_activate().connect([this] {this->on_save_click();});
-    filemenu->append(*menuitem_save);
-    //         S A V E ---- A S
-    Gtk::MenuItem *menuitem_save_as = Gtk::manage(new Gtk::MenuItem("Save _As", true));
-    menuitem_save_as->signal_activate().connect([this] {this->on_save_as_click();});
-    filemenu->append(*menuitem_save_as);
-
-    //         O P E N   G A M E
-    // Append Open... to the File menu
-    Gtk::MenuItem *menuitem_open = Gtk::manage(new Gtk::MenuItem("_Open", true));
-    menuitem_open->signal_activate().connect([this] {this->on_open_click();});
-    filemenu->append(*menuitem_open);
-    //// QUIT
     Gtk::MenuItem *menuitem_quit = Gtk::manage(new Gtk::MenuItem("_Quit", true));
     menuitem_quit->signal_activate().connect([this] {this->on_quit_click();});
     filemenu->append(*menuitem_quit);
@@ -55,8 +32,6 @@ Mainwin::Mainwin() :store{new Store} {
     //////////////
     //VIEW menu item
     /////////////
-
-
     Gtk::MenuItem *menuitem_view = Gtk::manage(new Gtk::MenuItem("_View", true));
     menubar->append(*menuitem_view);
     Gtk::Menu *viewmenu = Gtk::manage(new Gtk::Menu());
@@ -120,58 +95,31 @@ Mainwin::Mainwin() :store{new Store} {
     menuitem_about->signal_activate().connect([this] {this->on_about_click();});
     helpmenu->append(*menuitem_about);
 
-  
-    data = Gtk::manage(new Gtk::Label{"", Gtk::ALIGN_START, Gtk::ALIGN_START});
-    data->set_hexpand(true);
-    data->set_vexpand(true);
-    vbox->add(*data);
-    set_data("WELCOME TO MY STORE FOR SPRINT 3\n\nHow can i help you today?");
 
-    
-
-     msg = Gtk::manage(new Gtk::Label());
-    msg->set_hexpand(true);
-    vbox->pack_start(*msg, Gtk::PACK_SHRINK, 0);
     vbox->show_all();
 }
 //VIEW
 void Mainwin::on_view_peripheral_click()
 {
-     std::ostringstream oss;
-     oss<<"PERIPHERAL LIST:\n\n";
 
-            for(int i=0; i<store->num_options(); ++i) 
-              oss<< i << ") " << store->option(i) << "\n";
-                set_data(oss.str());
 }
 
 void Mainwin::on_view_desktop_click()
 {
-    std::ostringstream oss;
-    oss<<"DESKTOP LIST:\n\n";
-      for(int i=0; i<store->num_desktops(); ++i) 
-                    oss<< i << ") " << store->desktop(i) << "\n";
-    set_data(oss.str());
+
 }
 void Mainwin::on_view_customer_click()
 {
-       std::ostringstream oss;
-       oss<<"CUSTOMER LIST:\n\n";
+         std::stringstream oss ;
         for(int i=0; i<store->num_customers(); ++i) 
         {
-                oss << i << ") " << store->customer(i) << "\n";      
+                oss << i << ") " << store->customer(i) << "\n";
+                set_data(oss.str());
         }
-   
-        set_data(oss.str());
-     
 }
 void Mainwin::on_view_order_click()
 {
-    std::ostringstream oss;
-    oss <<"ORDER PLACED:\n\n";
-    for(int i=0; i<store->num_orders(); ++i) 
-     oss<< i << ") " << store->order(i) << "\n";
-     set_data(oss.str());
+
 }
 void Mainwin::on_quit_click()
 {
@@ -188,55 +136,37 @@ void Mainwin::on_insert_peripheral_click()
     Options option{e_name,cost};
   
     store->add_option(option);
-    on_view_peripheral_click();
+ 
 }
 
 void Mainwin::on_insert_desktop_click()
-{   on_view_peripheral_click();  
+{
+    
     int desktop = store->new_desktop();
-    while(true)
-    {
-    std::string text = "Add which Peripheral. -1 to stop";
+    std::string text = "Add which Peripheral";
     std::string ans = get_string(text);
     int option = get_int(ans);
-    if(option == -1){break;}
-     try {
-            store->add_option(option, desktop);
-         } 
-    catch(std::exception& e) 
-            {
-                std::cerr << "#### INVALID OPTION ####\n\n";
-             }
-    }
-    on_view_desktop_click();
-    set_msg("Added desktop " + std::to_string(desktop));
+   
+                   try {
+                    store->add_option(option, desktop);
+                } catch(std::exception& e) {
+                    std::cerr << "#### INVALID OPTION ####\n\n";
+                }
 }
 void Mainwin::on_insert_order_click()
-{    
-    on_view_customer_click();
-    std::string text = "Customer @index? (-1 to return)";
+{
+    std::string text = "Customer @index?";
     std::string ans = get_string(text);
     int val = get_int(ans);
-    if(val== -1) return;
-
-     int order = store->new_order(val);
-     on_view_desktop_click();
-      while(true) {
-        std::string TEXT = "Desktop (-1 when done)?";
-        std::string desktop = get_string(TEXT);
-        int val = get_int(desktop);
-
-        if(val == -1) break;
-        store->add_desktop(val, order);
-    }    
+     try {
+                   int order = store->new_order(val);
+                } catch(std::exception& e) {
+                    std::cerr << "#### INVALID OPTION ####\n\n";
+                }
     
-      
-    on_view_order_click();
-     set_msg("Added order " + std::to_string(order) + " for $" + std::to_string(store->order(order).price()));
 }
 void Mainwin::on_insert_customer_click()
 {
-    
     std::string name = "Customer Name";
     std::string email = "Customer Email";
     std::string phone="Customer Phone";
@@ -244,13 +174,9 @@ void Mainwin::on_insert_customer_click()
     std::string Email = get_string(email);
     std::string Phone = get_string(phone);
     Customer customer{Name,Phone,Email};
- 
     
 
     store->add_customer(customer);
-    on_view_customer_click();
-    set_msg("Added customer " + Name);
-    
 }
 //HELP
 void Mainwin::on_about_click()
@@ -258,8 +184,7 @@ void Mainwin::on_about_click()
     Gtk::AboutDialog dialog;
     dialog.set_transient_for(*this); // Avoid the discouraging warning
     dialog.set_program_name("ELSA");
-    auto logo = Gdk::Pixbuf::create_from_file("store.jpeg");
-    dialog.set_logo(logo);
+
     dialog.set_version("Version 0");
     dialog.set_copyright("Copyright 2020");
     dialog.set_license_type(Gtk::License::LICENSE_GPL_3_0);
@@ -278,7 +203,7 @@ std::string Mainwin::get_string(std::string prompt)
     edialog.set_text("Type answer here");
     edialog.run();
 
-  Gtk::MessageDialog mdialog{*this, "Thank you for your response"};
+  Gtk::MessageDialog mdialog{*this, edialog.get_text()};
    mdialog.run();
      return edialog.get_text();
 
@@ -298,98 +223,8 @@ int Mainwin::get_int(std::string prompt)
 Mainwin::~Mainwin() { }
 void Mainwin::set_data(std::string s)
 {
-   data->set_text(s);
-}
-void Mainwin::set_msg(std::string s)
-{
-   msg->set_markup(s);
-}
-void Mainwin::on_new_store_click()
-{
-    delete store;
-    store = new Store{};
-}
-void Mainwin::on_save_click(){
-         try {
-             
-            std::ofstream ofs{filename};
-            store->save(ofs);
-            
-            if(!ofs) throw std::runtime_error{"Error writing file"};
-        } catch(std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to save file: "}.run();
-}
-}
-void Mainwin::on_save_as_click()
-{
-    Gtk::FileChooserDialog dialog("Please choose a file",
-    Gtk::FileChooserAction::FILE_CHOOSER_ACTION_SAVE);
-    dialog.set_transient_for(*this);
-
-    auto filter_elsa = Gtk::FileFilter::create();
-    filter_elsa->set_name("ELSA files");
-    filter_elsa->add_pattern("*.elsa");
-    dialog.add_filter(filter_elsa);
- 
-    auto filter_any = Gtk::FileFilter::create();
-    filter_any->set_name("Any files");
-    filter_any->add_pattern("*");
-    dialog.add_filter(filter_any);
-    
-    dialog.set_filename(filename);
-
-    //Add response buttons the the dialog:
-    dialog.add_button("_Cancel", 0);
-    dialog.add_button("_Save", 1);
-    int result = dialog.run();
-      
-    if (result == 1) {
-        try {
-            std::ofstream ofs{dialog.get_filename()};
-            store->save(ofs);
-            
-            if(!ofs) throw std::runtime_error{"Error writing file"};
-        } catch(std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to save file: "}.run();
-        }
-    
-    }
-}
-void Mainwin::on_open_click(){
-   Gtk::FileChooserDialog dialog("Please choose a file",
-          Gtk::FileChooserAction::FILE_CHOOSER_ACTION_OPEN);
-    dialog.set_transient_for(*this);
-
-    auto filter_elsa = Gtk::FileFilter::create();
-    filter_elsa->set_name("ELSA files");
-    filter_elsa->add_pattern("*.elsa");
-    dialog.add_filter(filter_elsa);
- 
-    auto filter_any = Gtk::FileFilter::create();
-    filter_any->set_name("Any files");
-    filter_any->add_pattern("*");
-    dialog.add_filter(filter_any);
-
-    dialog.set_filename(filename);
-
-    //Add response buttons the the dialog:
-    dialog.add_button("_Cancel", 0);
-    dialog.add_button("_Open", 1);
-
-    int result = dialog.run();
-
-    if (result == 1) {
-        try {
-            //delete store;
-            std::ifstream ifs{dialog.get_filename()};
-            store = new Store{ifs};
-            if(!ifs) throw std::runtime_error{"File contents bad"};
-
-        } catch (std::exception& e) {
-            Gtk::MessageDialog{*this, "Unable to open elsa"}.run();
-        }
-    }
-
-
-      
+   data = Gtk::manage(new Gtk::Label());
+   data->set_hexpand(true);
+   data->set_vexpand(true);
+    vbox->add(*data);
 }

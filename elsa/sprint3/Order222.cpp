@@ -2,11 +2,9 @@
 #include "Order.h"
 // #include <iostream>
  #include <sstream>
-Order::Order(Customer& add_customer)
+Order::Order(Customer& add_customer):_customer{&add_customer}
 {
-      Customer* customer = new Customer{add_customer};
-     _customer = customer;
-
+    
 }
 Order::~Order()
 {
@@ -35,18 +33,11 @@ std::ostream& operator<<(std::ostream& ost, const Order& add_order)
         ost << *ptr_order << "\n";
     }   
    
-    ost<<"CONTACT INFO: \n"<<*add_order._customer;
+    ost<<"CONTACT INFO: \n"<<&add_order._customer;
     return ost;
+   
 }
-void Order::save(std::ostream& ost)
-{
-    ost << _products.size()<<std::endl;
-    ost << *_customer;
-    for(Desktop*  ptr_order: _products)
-    {
-        ost << *ptr_order << "\n";
-    }
-}
+
 Order::Order(std::istream& ist)
 {
 
@@ -54,13 +45,15 @@ Order::Order(std::istream& ist)
     ist >> product_size;
     ist.ignore(32767,'\n');
 
+    
+        
          std::string text,name,email,phone;
         getline(ist,text);
         getline(ist,name);
         getline(ist,email);
         getline(ist,phone);
         Customer* customer = new Customer{name,email,text}; 
-     
+        _customer = customer;
 
         Order order(*customer);
 
@@ -81,5 +74,15 @@ Order::Order(std::istream& ist)
          }
         //_products.push_back(customer);
     
+}
+
+void Order::save(std::ostream& ost)
+{
+    ost << _products.size()<<std::endl;
+    ost << _customer;
+    for(Desktop*  ptr_order: _products)
+    {
+        ost << *ptr_order << "\n";
+    }
 }
 
