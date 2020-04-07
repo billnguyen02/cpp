@@ -19,7 +19,7 @@ int Order::add_product(Desktop& add_desktop)
 }
 double Order::price()
 {
-    double total = 0.00;
+    double total = 0;
     for(auto ptr_desktop: _products )
     {
         total = total + ptr_desktop->price();
@@ -42,16 +42,12 @@ void Order::save(std::ostream& ost)
     ost << _products.size()<<std::endl;
     int size;
     size = _products.size();
-     
-
     ost << *_customer;
     for(int i = 0; i<size ; i++)
     {
         int x = _products.at(i)->size();
         ost << x<<std::endl;
         ost << *_products.at(i);
-        
-        
     }
 }
 Order::Order(std::istream& ist)

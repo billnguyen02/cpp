@@ -67,6 +67,7 @@ void Store::save(std::ostream& ost) {
     for(i = 0; i < size_order; i++)
     {
         orders.at(i).save(ost);
+        
     } 
 }
 Store::Store(){}

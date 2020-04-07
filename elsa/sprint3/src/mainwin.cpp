@@ -170,7 +170,10 @@ void Mainwin::on_view_order_click()
     std::ostringstream oss;
     oss <<"ORDER PLACED:\n\n";
     for(int i=0; i<store->num_orders(); ++i) 
+    {
      oss<< i << ") " << store->order(i) << "\n";
+     oss<< "Total Price: $"<<store->order(i).price()<<"\n\n";
+    }
      set_data(oss.str());
 }
 void Mainwin::on_quit_click()
@@ -298,7 +301,6 @@ void Mainwin::on_insert_customer_click()
    
         on_view_customer_click();
          }
-
     
      }
 
@@ -402,6 +404,7 @@ void Mainwin::on_save_as_click()
       
     if (result == 1) {
         try {
+            filename = dialog.get_filename();
             std::ofstream ofs{dialog.get_filename()};
             store->save(ofs);
             
@@ -438,6 +441,7 @@ void Mainwin::on_open_click(){
     if (result == 1) {
         try {
             //delete store;
+            filename = dialog.get_filename();
             std::ifstream ifs{dialog.get_filename()};
             store = new Store{ifs};
             if(!ifs) throw std::runtime_error{"File contents bad"};
