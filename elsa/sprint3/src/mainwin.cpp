@@ -241,20 +241,67 @@ void Mainwin::on_insert_order_click()
 }
 void Mainwin::on_insert_customer_click()
 {
+    Gtk::Dialog dialog{"CUSTOMER INFO", *this};
     
-    std::string name = "Customer Name";
-    std::string email = "Customer Email";
-    std::string phone="Customer Phone";
-    std::string Name = get_string(name);
-    std::string Email = get_string(email);
-    std::string Phone = get_string(phone);
-    Customer customer{Name,Phone,Email};
- 
-    
-    store->add_customer(customer);
+        Gtk::Grid grid;
+
+    // Add the animal type
+
+
+    // Accept the animal's name
+    Gtk::Label l_name{"Name"};
+    Gtk::Entry e_name;               // Accept any line of text
+
+    grid.attach(l_name, 0, 1, 1, 1);
+    grid.attach(e_name, 1, 1, 2, 1);
+
+    Gtk::Label l_email{"Email"};
+    Gtk::Entry e_email;               // Accept any line of text
+
+    grid.attach(l_email, 0, 2, 1, 1);
+    grid.attach(e_email, 1, 2, 2, 1);
+
+    Gtk::Label l_phone{"Phone"};
+    Gtk::Entry e_phone;               // Accept any line of text
+
+   grid.attach(l_phone, 0, 3, 1, 1);
+    grid.attach(e_phone, 1, 3, 2, 1);
+
+
+
+
+    // Now add the grid to the dialog's VBox (called its "content area")
+    dialog.get_content_area()->add(grid);
+
+    // Add 2 buttons (Gtk::Dialog handles buttons for you, just use add_button method!)
+    // Button response IDs are from https://developer.gnome.org/gtkmm/stable/group__gtkmmEnums.html
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+    dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+    // NOTE: The x in the title bar to close the dialog is Gtk::RESPONSE_DELETE_EVENT
+    int response;
+
+    // It's ready!  Now display it to the user.
+    dialog.show_all();
+     while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
+
+        // Data validation: If the user doesn't enter a name for the animal, complain
+       
+        if (e_name.get_text().size() == 0) {e_name.set_text("*required*"); continue;}
+        else if (e_email.get_text().size() == 0) {e_email.set_text("*required*"); continue;}
+        else if (e_phone.get_text().size() == 0) {e_phone.set_text("*required*"); continue;}
+        else 
+         {std::string Name = e_name.get_text();
+        std::string Email = e_email.get_text();
+        std::string Phone = e_phone.get_text();
+        Customer customer{Name,Phone,Email};
+        store->add_customer(customer); 
    
-    on_view_customer_click();
-    set_msg("Added customer " + Name);
+        on_view_customer_click();
+         }
+
+    
+     }
+
     
 }
 //HELP
