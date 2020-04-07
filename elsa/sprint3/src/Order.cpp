@@ -65,6 +65,7 @@ Order::Order(std::istream& ist)
         Customer customer {name,email,phone}; 
         Customer* ptr_customer = new Customer{customer};
         _customer = ptr_customer;
+
     for(int j = 0 ; j < product_size; j++){
         std::string num_string;
         getline(ist,num_string);
@@ -84,9 +85,7 @@ Order::Order(std::istream& ist)
               os >> option >> cost;
               double val;
               val = std::stod(cost);
-
               Options* o= new Options{option,val};
-              
               desktop.add_option(*o);
               Desktop* ptr_desktop = new Desktop{desktop};
               if(k == (num -1))

@@ -183,15 +183,44 @@ void Mainwin::on_quit_click()
 ///INSERT
 void Mainwin::on_insert_peripheral_click()
 {
-    std::string name = "Product Name";
-    std::string num  = "Product Cost";
-    std::string e_name = get_string(name);
-    std::string e_cost = get_string(num);
-    double cost = get_double(e_cost);
-    Options option{e_name,cost};
+    Gtk::Dialog dialog{"INSERT PERIPHERAL RATT TA TA", *this};
+    Gtk::Grid grid;
+    Gtk::Label l_pname{"Product Name"};
+    Gtk::Entry e_pname;               // Accept any line of text
+
+    grid.attach(l_pname, 0, 1, 1, 1);
+    grid.attach(e_pname, 1, 1, 2, 1);
+
+    Gtk::Label l_pcost{"Product Cost"};
+    Gtk::Entry e_pcost;               // Accept any line of text
+
+    grid.attach(l_pcost, 0, 2, 1, 1);
+    grid.attach(e_pcost, 1, 2, 2, 1);
+
+    // Now add the grid to the dialog's VBox (called its "content area")
+    dialog.get_content_area()->add(grid);
+
+ 
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+    dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+    int response;
+    dialog.show_all();
+    while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
+
+ 
+     if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+    else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
+        
+    std::string name = e_pname.get_text();
+    std::string num  = e_pcost.get_text();
+
+    double cost = get_double(num);
+    Options option{name,cost};
     store->add_option(option);
   
-    on_view_peripheral_click();
+    on_view_peripheral_click(); 
+    }
 }
 
 void Mainwin::on_insert_desktop_click()
