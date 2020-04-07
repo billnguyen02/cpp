@@ -16,6 +16,7 @@ class Desktop
         void save(std::ostream& ost);
         Desktop(std::istream& ist);
         Desktop();
+        int size();
     private:
         std::vector< Options*> _options;
 };

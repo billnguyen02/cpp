@@ -10,6 +10,10 @@ void Desktop::add_option(Options& add_options)
     _options.push_back(&add_options);
     
 }
+int Desktop::size()
+{
+     return _options.size();
+}
 std::ostream& operator<<(std::ostream& ost, const Desktop& desktop)
 {
     ost<<"Dektop List: \n";

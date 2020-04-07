@@ -47,7 +47,11 @@ void Order::save(std::ostream& ost)
     ost << *_customer;
     for(int i = 0; i<size ; i++)
     {
+        int x = _products.at(i)->size();
+        ost << x<<std::endl;
         ost << *_products.at(i);
+        
+        
     }
 }
 Order::Order(std::istream& ist)
@@ -66,12 +70,17 @@ Order::Order(std::istream& ist)
         Customer* ptr_customer = new Customer{customer};
         _customer = ptr_customer;
 
+        std::string num_string;
+        getline(ist,num_string);
+        int num = stoi(num_string);
+        std::string d_list;
+        getline(ist,d_list);
+        Desktop desktop;
         
-
-         for( int k = 0; k < product_size ; k++)
+         for( int k = 0; k < num ; k++)
           {
-              std::string d_list,option,cost,line,line2;
-              getline(ist,d_list);
+              std::string option,cost,line,line2;
+              
               getline(ist,line);
               //getline(ist,line2);
               std::stringstream os;
@@ -81,11 +90,15 @@ Order::Order(std::istream& ist)
               val = std::stod(cost);
 
               Options* o= new Options{option,val};
-              Desktop desktop;
+              
               desktop.add_option(*o);
               Desktop* ptr_desktop = new Desktop{desktop};
-              _products.push_back(ptr_desktop);
+              if(k == (num -1))
+              {
+                _products.push_back(ptr_desktop);
+              }
           }
+          
         //_products.push_back(customer);
     
 }
