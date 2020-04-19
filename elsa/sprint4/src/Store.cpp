@@ -16,6 +16,15 @@ void Store::add_option(Options& option)
    // o = new Options{option};
     options.push_back(option.ptr());    
 }
+void Store::remove_option(int index)
+{
+    int size = options.size();
+    if(index <= size)
+    {
+      options.erase(options.begin()+index);
+    }
+
+}
 int Store::num_options() {return options.size();}
 Options& Store::option(int index) {return *options.at(index);}
 
@@ -97,15 +106,49 @@ Store::Store(std::istream& ist){
     ist >> size2;
     ist.ignore(32767,'\n');
 
-    if (size2 !=0 )
+    
+    std::string R_char = "R";
+    std::string O_char = "O";
+    std::string C_char = "C";
+    std::string R;
+
+    if(size2>0)
     {
-        for ( int i = 0 ; i<size2;i++)
+        for(int i = 0 ; i < size2; i++)
         {
-            Options* Option = new Options {ist};
-            options.push_back(Option);
-            if(!ist) throw std::runtime_error("HAHA");
+            ist >> R;
+            if(R.compare(R_char) == 0)
+            {         
+                Ram Ram{ist};
+                options.push_back(Ram.ptr());
+                if(!ist) throw std::runtime_error("HAHA");
+            }
+            else if( R.compare(O_char)==0)
+            {
+                Options* Option = new Options {ist};
+                options.push_back(Option);
+                if(!ist) throw std::runtime_error("HAHA");
+            }
+             else if( R.compare(C_char)==0)
+            {
+                CPU CPU{ist};
+                options.push_back(CPU.ptr());
+                if(!ist) throw std::runtime_error("HAHA");
+            }           
         }
     }
+
+    // else if(size2>0 && R.compare(letter)!=0)
+   
+    // {
+    //     for ( int i = 0 ; i<size2;i++)
+    //     {
+    //         Options* Option = new Options {ist};
+    //         options.push_back(Option);
+    //         if(!ist) throw std::runtime_error("HAHA");
+    //     }
+    // }
+
     int size_desktop;
     //DESKTOP
     ist >> size_desktop;

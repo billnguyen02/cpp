@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <fstream>
 
+
 Mainwin::Mainwin() :store{new Store} {
 
     // /////////////////
@@ -86,12 +87,13 @@ Mainwin::Mainwin() :store{new Store} {
     menuitem_insert->set_submenu(*insertmenu);
 
     Gtk::MenuItem *menuitem_insert_peripheral = Gtk::manage(new Gtk::MenuItem("_Peripheral", true));   
+    Gtk::MenuItem *menu = Gtk::manage(new Gtk::MenuItem("_Peripheral", true)); 
     menuitem_insert_peripheral->signal_activate().connect([this] {this->on_insert_peripheral_click();});
     insertmenu->append(*menuitem_insert_peripheral);
   //   menuitem_insert_peripheral->show();
 
 
-     Gtk::MenuItem *menuitem_insert_desktop = Gtk::manage(new Gtk::MenuItem("_Desktop", true));
+    Gtk::MenuItem *menuitem_insert_desktop = Gtk::manage(new Gtk::MenuItem("_Desktop", true));
     menuitem_insert_desktop->signal_activate().connect([this] {this->on_insert_desktop_click();});
     insertmenu->append(*menuitem_insert_desktop);
     //menuitem_insert_desktop->show();
@@ -102,9 +104,20 @@ Mainwin::Mainwin() :store{new Store} {
     insertmenu->append(*menuitem_insert_order);
 
 
-     Gtk::MenuItem *menuitem_insert_customer = Gtk::manage(new Gtk::MenuItem("_customer", true));
+     Gtk::MenuItem *menuitem_insert_customer = Gtk::manage(new Gtk::MenuItem("_Customer", true));
     menuitem_insert_customer->signal_activate().connect([this] {this->on_insert_customer_click();});
     insertmenu->append(*menuitem_insert_customer);
+
+    //REMOVE ----------------------------------------------
+    Gtk::MenuItem *menuitem_remove = Gtk::manage(new Gtk::MenuItem("_Remove", true));
+    menubar->append(*menuitem_remove);
+
+    Gtk::Menu *remove_menu = Gtk::manage(new Gtk::Menu());
+
+    menuitem_remove->set_submenu(*remove_menu);
+    Gtk::MenuItem *remove_peripheral = Gtk::manage(new Gtk::MenuItem("_Peripheral", true));
+    remove_peripheral->signal_activate().connect([this]{this->on_remove_peripheral_click();});
+    remove_menu->append(*remove_peripheral);
 
 
 
@@ -129,21 +142,30 @@ Mainwin::Mainwin() :store{new Store} {
     helpmenu->append(*menuitem_disk);
   
     data = Gtk::manage(new Gtk::Label{"", Gtk::ALIGN_START, Gtk::ALIGN_START});
-    data->set_hexpand(true);
-    data->set_vexpand(true);
-    vbox->add(*data);
-    set_data("WELCOME TO MY STORE FOR SPRINT 3\n\nHow can i help you today?");
-
-    
-
-     msg = Gtk::manage(new Gtk::Label());
-    msg->set_hexpand(true);
-    vbox->pack_start(*msg, Gtk::PACK_SHRINK, 0);
-  Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
     data->set_hexpand();
-    data->override_background_color(Gdk::RGBA("yellow"));
-    vbox->add(*data);
+
+    // A Gtk::Label is intrinsically transparent - it's background color cannot be set
+    // Therefore, we add it to a Gtk::EventBox with background color overridden to white
+    Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
+    eb->set_hexpand();
+    eb->override_background_color(Gdk::RGBA("white"));
+    eb->add(*data);
+    // PACK_EXPAND_WIDGET tells VBox this widget should be as big as possible
+    vbox->pack_start(*eb, Gtk::PACK_EXPAND_WIDGET, 0);
+    
+    // S T A T U S   B A R   D I S P L A Y ////////////////////////////////////
+    // Provide a status bar for game messages
+    msg = Gtk::manage(new Gtk::Label);
+    msg->set_hexpand();
+    // PACK_SHRINK tells VBox this widget should be as small as possible
+    vbox->pack_start(*msg, Gtk::PACK_SHRINK, 0);
+
+    // Make the box and everything in it visible
     vbox->show_all();
+
+    // Start with a new store
+    on_new_store_click();
+    
 }
 //VIEW
 void Mainwin::on_disk_click()
@@ -156,6 +178,7 @@ void Mainwin::on_disk_click()
     o = Options{"1 TB PC Disk", 44.83};                    store->add_option(o);
     o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
     o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
+     on_view_peripheral_click();
 }
 void Mainwin::on_CPU_click()
 {
@@ -179,7 +202,7 @@ void Mainwin::on_CPU_click()
     o = Options{"1 TB PC Disk", 44.83};                    store->add_option(o);
     o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
     o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
-
+    on_view_peripheral_click();    
 }
 void Mainwin::on_view_peripheral_click()
 {
@@ -229,11 +252,16 @@ void Mainwin::on_quit_click()
 ///INSERT
 void Mainwin::on_insert_peripheral_click()
 {
+   
     Gtk::Dialog opt{"Choose your Options  ",*this};
+    Gtk::Grid g;
+  
     opt.add_button("RAM",1);
     opt.add_button("Other",2);
-    int res;
-    if(res =opt.run() == 1)
+    opt.add_button("CPU",3);
+    
+    int res ;
+    if(opt.run() == 1)
     {
             Gtk::Dialog dialog2{"INSERT RAM RATT TA TA", *this};
             Gtk::Grid grid;
@@ -266,32 +294,31 @@ void Mainwin::on_insert_peripheral_click()
             int response;
             dialog2.show_all();
             while((response = dialog2.run()) != Gtk::RESPONSE_CANCEL) 
-            {
-
-        
-            if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
-            else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
-            else if (e_gb.get_text().size() == 0) {e_gb.set_text("*required*"); continue;}
-            
+             {            
+                if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
+                else if (e_gb.get_text().size() == 0) {e_gb.set_text("*required*"); continue;}
                 
-            std::string name = e_pname.get_text();
-            std::string num_cost  = e_pcost.get_text();
-            std::string num_gb = e_gb.get_text();
+                    
+                std::string name = e_pname.get_text();
+                std::string num_cost  = e_pcost.get_text();
+                std::string num_gb = e_gb.get_text();
 
-            double cost = get_double(num_cost);
-            int gb = get_int(num_gb);
+                int gb = get_int(num_gb);
+                double cost = get_double(num_cost);
 
-            Ram Ram {name,cost,gb};
-           
-            Options& opt = Ram;
+                Ram Ram {name,cost,gb};
             
-           // Options option{name,cost};
-            store->add_option(opt);
-        
+                Options& opt = Ram;
+                
+            // Options option{name,cost};
+                store->add_option(opt);
+            
                 on_view_peripheral_click(); 
+                set_msg("Added peripheral " + name);
             }
     }
-    else if(res=opt.run()==2)
+     else if(opt.run()==2)
     {
             Gtk::Dialog dialog{"INSERT PERIPHERAL RATT TA TA", *this};
             Gtk::Grid grid;
@@ -316,22 +343,77 @@ void Mainwin::on_insert_peripheral_click()
 
             int response;
             dialog.show_all();
-            while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
-
-        
-            if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
-            else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
-                
-            std::string name = e_pname.get_text();
-            std::string num  = e_pcost.get_text();
-
-            double cost = get_double(num);
-            Options option{name,cost};
-            store->add_option(option);
-        
-            on_view_peripheral_click(); 
-            }
+            while((response = dialog.run()) != Gtk::RESPONSE_CANCEL)
+                 {        
+                    if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                    else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}                        
+                    std::string name = e_pname.get_text();
+                    std::string num  = e_pcost.get_text();
+                    double cost = get_double(num);
+                    Options option{name,cost};
+                    store->add_option(option);               
+                    on_view_peripheral_click(); 
+                     set_msg("Added peripheral " + name);
+                }
     }
+    else if(res =opt.run() == 3)
+    {
+            Gtk::Dialog dialog3{"INSERT CPU RATT TA TA", *this};
+            Gtk::Grid grid;
+
+            Gtk::Label l_pname{"Product Name"};
+            Gtk::Entry e_pname;               // Accept any line of text
+
+            grid.attach(l_pname, 0, 1, 1, 1);
+            grid.attach(e_pname, 1, 1, 2, 1);
+
+            Gtk::Label l_pcost{"Product Cost"};
+            Gtk::Entry e_pcost;               // Accept any line of text
+
+            grid.attach(l_pcost, 0, 2, 1, 1);
+            grid.attach(e_pcost, 1, 2, 2, 1);
+
+            Gtk::Label l_gb{"Core "};
+            Gtk::Entry e_gb; 
+
+            grid.attach(l_gb, 0, 3, 1, 1);
+            grid.attach( e_gb, 1, 3, 2, 1);       
+
+            // Now add the grid to the dialog's VBox (called its "content area")
+            dialog3.get_content_area()->add(grid);
+
+        
+            dialog3.add_button("Select", Gtk::RESPONSE_OK);
+            dialog3.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+            int response;
+            dialog3.show_all();
+            while((response = dialog3.run()) != Gtk::RESPONSE_CANCEL) 
+             {            
+                if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
+                else if (e_gb.get_text().size() == 0) {e_gb.set_text("*required*"); continue;}
+                                    
+                std::string name = e_pname.get_text();
+                std::string num_cost  = e_pcost.get_text();
+                std::string core = e_gb.get_text();
+
+                double cost = get_double(num_cost);
+
+                CPU CPU{name,cost,core};
+            
+               // Options& opt = CPU;
+                
+            // Options option{name,cost};
+                store->add_option(CPU);
+            
+                on_view_peripheral_click(); 
+                set_msg("Added peripheral " + name);
+
+            }
+        }
+
+   
 }
 
 void Mainwin::on_insert_desktop_click()
@@ -350,7 +432,7 @@ void Mainwin::on_insert_desktop_click()
             {
                 Gtk::MessageDialog{*this, "#### INVALID OPTION ####\n\n"}.run();
                 
-             }
+            }
     }
     on_view_desktop_click();
     set_msg("Added desktop " + std::to_string(desktop));
@@ -360,7 +442,7 @@ void Mainwin::on_insert_order_click()
 
        on_view_customer_click(); // SHOW THE CONTENT OF CUSTOMER
 
-     Gtk::Dialog dialog{"INSERT ORDER", *this};
+    Gtk::Dialog dialog{"INSERT ORDER", *this};
     Gtk::Grid grid;
     Gtk::Label l_cnum{"Customer @index"};
     Gtk::Entry e_cnum;               // Accept any line of text
@@ -383,23 +465,25 @@ void Mainwin::on_insert_order_click()
 
     int response;
     dialog.show_all();
-    while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
-    if((response = dialog.run()) == Gtk::RESPONSE_OK){on_view_order_click();}
-      
-     if (e_cnum.get_text().size() == 0) {e_cnum.set_text("*required*"); continue;}
-    else if (e_dnum.get_text().size() == 0) {e_dnum.set_text("*required*"); on_view_desktop_click(); continue;}
-        
-    std::string c_num = e_cnum.get_text();
-    on_view_desktop_click(); // SHOW THE CONTENT OF DESKTOP
-    std::string d_num  = e_dnum.get_text();
 
-    int cus_num = get_int(c_num);
-    int des_num = get_int(d_num);
-    if(cus_num || des_num == -1){break;};
-    int order;
-     order = store->new_order(cus_num);
-    store->add_desktop(cus_num,order);
-    
+    while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
+            if((response = dialog.run()) == Gtk::RESPONSE_OK){on_view_order_click();}
+            if (e_cnum.get_text().size() == 0) {e_cnum.set_text("*required*"); continue;}
+            else if (e_dnum.get_text().size() == 0) {e_dnum.set_text("*required*"); on_view_desktop_click(); continue;}
+                
+            std::string c_num = e_cnum.get_text();
+            on_view_desktop_click(); // SHOW THE CONTENT OF DESKTOP
+            std::string d_num  = e_dnum.get_text();
+
+            int cus_num = get_int(c_num);
+            int des_num = get_int(d_num);
+            if(cus_num || des_num == -1){break;};
+            int order;
+            order = store->new_order(cus_num);
+            store->add_desktop(cus_num,order);
+            on_view_order_click();
+            set_msg("Added Order");
+            
     }
 
 
@@ -410,14 +494,12 @@ void Mainwin::on_insert_customer_click()
 {
     Gtk::Dialog dialog{"CUSTOMER INFO", *this};
     
-        Gtk::Grid grid;
-
-    // Add the animal type
-
+    Gtk::Grid grid;
 
     // Accept the animal's name
     Gtk::Label l_name{"Name"};
-    Gtk::Entry e_name;               // Accept any line of text
+    Gtk::Entry e_name;
+            // Accept any line of text
 
     grid.attach(l_name, 0, 1, 1, 1);
     grid.attach(e_name, 1, 1, 2, 1);
@@ -431,9 +513,8 @@ void Mainwin::on_insert_customer_click()
     Gtk::Label l_phone{"Phone"};
     Gtk::Entry e_phone;               // Accept any line of text
 
-   grid.attach(l_phone, 0, 3, 1, 1);
+    grid.attach(l_phone, 0, 3, 1, 1);
     grid.attach(e_phone, 1, 3, 2, 1);
-
 
 
 
@@ -449,26 +530,26 @@ void Mainwin::on_insert_customer_click()
 
     // It's ready!  Now display it to the user.
     dialog.show_all();
-     while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) {
-
-        // Data validation: If the user doesn't enter a name for the animal, complain
-       
+     while((response = dialog.run()) != Gtk::RESPONSE_CANCEL) 
+     {
+        // Data validation: If the user doesn't enter a string for the name, complain
+       // Data validation: If the user doesn't enter a string for the email, complain
+       // Data validation: If the user doesn't enter a string for the phone, complain
         if (e_name.get_text().size() == 0) {e_name.set_text("*required*"); continue;}
         else if (e_email.get_text().size() == 0) {e_email.set_text("*required*"); continue;}
         else if (e_phone.get_text().size() == 0) {e_phone.set_text("*required*"); continue;}
-        else 
-         {std::string Name = e_name.get_text();
-        std::string Email = e_email.get_text();
-        std::string Phone = e_phone.get_text();
-        Customer customer{Name,Phone,Email};
-        store->add_customer(customer); 
-   
-        on_view_customer_click();
-         }
-    
-     }
 
-    
+        else 
+         {
+            std::string Name = e_name.get_text();
+            std::string Email = e_email.get_text();
+            std::string Phone = e_phone.get_text();
+            Customer customer{Name,Phone,Email};
+            store->add_customer(customer);   
+            on_view_customer_click();
+            set_msg("Added Customer "+ Name);
+         }    
+     }    
 }
 //HELP
 void Mainwin::on_about_click()
@@ -488,16 +569,18 @@ void Mainwin::on_about_click()
         "Robot by FreePik.com, licensed for personal and commercial purposes with attribution https://www.freepik.com/free-vector/grey-robot-silhouettes_714902.htm"};
     dialog.set_artists(artists);
     dialog.run();
+    
 }
 std::string Mainwin::get_string(std::string prompt)
 {
-     EntryDialog edialog{*this, prompt, true};
+    EntryDialog edialog{*this, prompt, true};
     edialog.set_secondary_text("What do you want to insert for "+prompt+" today?", true);
     edialog.set_text("Type answer here");
     edialog.run();
 
     Gtk::MessageDialog mdialog{*this, "Thank you for your response"};
     mdialog.run();
+
     return edialog.get_text();
 
 }
@@ -531,6 +614,9 @@ void Mainwin::on_new_store_click()
 {
     delete store;
     store = new Store{};
+    filename = "untitled.elsa";
+    set_data("WELCOME TO MY STORE FOR SPRINT 4\n\nHow can i help you today?");
+    set_msg("NEW STORE CREATED");
 }
 void Mainwin::on_save_click(){
          try {
@@ -617,4 +703,69 @@ void Mainwin::on_open_click(){
 
 
       
+}
+void Mainwin::on_remove_Customer_click()
+{
+
+}
+void Mainwin::on_remove_peripheral_click()
+{
+    on_view_peripheral_click();
+    int i = 0;
+     Gtk::Dialog dialog{"Which Peripheral would you like to delete?", *this};
+         
+
+    Gtk::Label l_num{"Product --INDEX--"};
+    Gtk::Entry e_num;
+
+    Gtk::Grid grid;
+   
+    grid.attach(l_num, 0, 1, 1, 1);
+    grid.attach(e_num, 1, 1, 2, 1);
+ 
+    dialog.get_content_area()->add(grid);
+    dialog.add_button("_Cancel", 0);
+    dialog.add_button("_Select", 1);
+
+                   // Accept any line of text
+    int res;
+    dialog.show_all();
+    while(res = dialog.run() != 0)
+    {
+        if (e_num.get_text().size() == 0) {e_num.set_text("*required*"); continue;}
+        std::string str = e_num.get_text();
+        if(!isdigit(str[0]))
+        {
+            e_num.set_text("*Please Enter A Valid Number*");
+            set_msg("*Please Enter A Valid Number*");
+            continue;
+        }
+
+        else if(isdigit(str[0]))
+        {
+            int val = get_int(str);
+            int size = store->num_options();
+            if (val > size)
+            {
+                e_num.set_text("*Index is out of Range*");
+                continue;
+                
+            }
+            else if( val <= size)
+            { try {
+            
+                store->remove_option(val);
+                
+                on_view_peripheral_click();
+                set_msg("Removed Option ("+str+")");
+
+        } catch (std::exception& e) {
+                Gtk::MessageDialog{*this, "WRONG INDEX"}.run();
+          
+            }
+        }
+    }
+    }
+
+
 }

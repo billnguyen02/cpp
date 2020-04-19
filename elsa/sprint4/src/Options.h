@@ -19,7 +19,7 @@ class Options
         virtual void save(std::ostream& ost) const ;
         Options(std::istream& ist);
         virtual Options* ptr() const;
-        
+        Options();
 };
 
 

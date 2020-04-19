@@ -25,12 +25,15 @@ std::ostream& operator<<(std::ostream& ost,  Options& add_option)
 }
 void Options::save(std::ostream& ost) const
 {
+    ost<<"O"<<std::endl;
     ost<<_name<<std::endl;
     ost<<_cost<<std::endl;
 }
 
 Options::Options(std::istream& ist)
 {
+    std::string str;
+    getline(ist,str);
     getline(ist,_name);
     std::string text ;
     getline(ist,text);
@@ -42,3 +45,4 @@ Options* Options::ptr() const
 {
     return new Options{*this};
 }
+Options::Options(){}

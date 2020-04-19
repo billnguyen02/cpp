@@ -14,6 +14,8 @@ class Ram : public Options
         std::string to_string() const override ;
         virtual void save(std::ostream& ost) const override;
         Ram* ptr() const override ;
+        Ram(std::istream& ist);
+        Ram();
 };
 
 #endif

@@ -31,6 +31,8 @@ class Mainwin : public Gtk::Window
 		void on_insert_order_click();
 		void on_insert_customer_click();
 		void on_about_click();
+		void on_remove_peripheral_click();
+		void on_remove_Customer_click();
 
 		std::string get_string(std::string prompt);
 		double get_double(std::string prompt);

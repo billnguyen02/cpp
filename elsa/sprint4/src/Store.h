@@ -6,6 +6,7 @@
 #include "Desktop.h"
 #include "Order.h"
 #include "Ram.h"
+#include "cpu.h"
 
 class Store {
   public:
@@ -17,6 +18,7 @@ class Store {
     Customer& customer(int index);
 
     void add_option(Options& option);
+    void remove_option(int index);
     int num_options();
     Options& option(int index);
 
@@ -29,6 +31,7 @@ class Store {
     void add_desktop(int desktop, int order); // to order
     int num_orders();
     Order& order(int index);
+    
   private:
     
     std::vector<Customer> customers;

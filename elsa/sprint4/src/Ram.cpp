@@ -5,6 +5,7 @@ Ram::Ram(std::string n, double c, int g):Options (n,c), _gb(g)
 {
    
 }
+Ram::Ram(){}
 Ram::~Ram(){}
 
 std::string Ram::to_string() const
@@ -13,6 +14,7 @@ std::string Ram::to_string() const
 }
 void Ram::save(std::ostream& ost)const
 {
+    ost<<"R"<<std::endl;
     ost<<_name<<std::endl;
     ost<<_cost<<std::endl;
     ost<<_gb<<std::endl;
@@ -20,5 +22,20 @@ void Ram::save(std::ostream& ost)const
 Ram* Ram::ptr() const
 {
     return new Ram{*this};
+}
+Ram::Ram(std::istream& ist)
+{
+    std::string text,name,cost,gb;
+    getline(ist,text);
+    getline(ist,name);
+    getline(ist,cost);
+    getline(ist,gb);
+    
+    double num_cost = stod(cost);
+    int    num_gb  = stoi(gb);
+  //  Ram Ram {name,num_cost,num_gb};
+    _name = name;
+    _cost = num_cost;
+    _gb = num_gb;
 }
 
