@@ -9,6 +9,7 @@ class Options
     protected:
         std::string _name;
         double _cost;
+        std::string _color ;
     public:
        
         Options(std::string name, double cost);
@@ -21,6 +22,8 @@ class Options
         virtual Options* ptr() const;
         Options();
         std::string search();
+        std::string get_color();
+        void set_color(std::string c);
 };
 
 

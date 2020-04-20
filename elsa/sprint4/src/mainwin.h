@@ -14,6 +14,8 @@ class Mainwin : public Gtk::Window
 		Gtk::Label* data;
 		Gtk::Label* msg;
 		std::string filename;
+		std::string _color;
+		Gtk::EventBox *eb;
     protected:
 		void on_disk_click();
 		void on_CPU_click();
@@ -35,7 +37,7 @@ class Mainwin : public Gtk::Window
 		void on_remove_Customer_click();
 		void on_find_peripheral_click();
 		void on_find_customer_click();
-
+		void on_color_click();
 		std::string get_string(std::string prompt);
 		double get_double(std::string prompt);
 		int get_int(std::string prompt);

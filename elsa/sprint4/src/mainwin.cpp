@@ -6,7 +6,7 @@
 #include <fstream>
 
 
-Mainwin::Mainwin() :store{new Store} {
+Mainwin::Mainwin() :store{new Store},eb{new Gtk::EventBox} {
 
     // /////////////////
     // G U I   S E T U P
@@ -14,7 +14,7 @@ Mainwin::Mainwin() :store{new Store} {
    
     set_default_size(800, 800);
     set_title("ELSA");
-   
+    
 
     
     // Put a vertical box container as the Window contents
@@ -201,6 +201,14 @@ Mainwin::Mainwin() :store{new Store} {
     Search_store_button->set_tooltip_markup("Quick Inventory Check");
     Search_store_button->signal_clicked().connect([this] {this->on_find_peripheral_click();});
     toolbar->append(*Search_store_button);
+    //Edit color theme
+    Gtk::Image *button_pen_color_image = Gtk::manage(new Gtk::Image("select_pen_color.png"));
+    Gtk::ToolButton *color_store_button = Gtk::manage(new Gtk::ToolButton(*button_pen_color_image));
+    color_store_button->set_tooltip_markup("Change the current Color theme");
+    color_store_button->signal_clicked().connect([this] {this->on_color_click();});
+    
+    toolbar->append(*color_store_button);
+
 
 
     //Create the seperate tool bar all the way on the other side for quit toolbar button
@@ -213,13 +221,17 @@ Mainwin::Mainwin() :store{new Store} {
     quit_store_button->signal_clicked().connect([this] {this->on_quit_click();});
     toolbar->append(*quit_store_button);
 
-    
+   
 
+    
 
     // A Gtk::Label is intrinsically transparent - it's background color cannot be set
     // Therefore, we add it to a Gtk::EventBox with background color overridden to white
-    Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
+    
+    //Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
     eb->set_hexpand();
+
+    
     eb->override_background_color(Gdk::RGBA("white"));
     eb->add(*data);
     // PACK_EXPAND_WIDGET tells VBox this widget should be as big as possible
@@ -234,10 +246,25 @@ Mainwin::Mainwin() :store{new Store} {
 
     // Make the box and everything in it visible
     vbox->show_all();
-
+  
     // Start with a new store
     on_new_store_click();
     
+}
+void Mainwin::on_color_click()
+{
+        Gtk::ColorChooserDialog dialog("Please choose a color");
+        dialog.set_transient_for(*this);  // Avoid the “discouraging” warning
+
+         // Set the current color as default
+
+        int result = dialog.run();
+
+        if (result = Gtk::RESPONSE_OK)
+        eb->override_background_color(Gdk::RGBA(dialog.get_rgba()));
+         
+
+
 }
 //VIEW
 void Mainwin::on_disk_click()
@@ -329,7 +356,7 @@ void Mainwin::on_find_customer_click()
                                 if(name.compare(store->customer(i).search())==0)
                                 {
                                     oss<<"Customer found:\n\n";
-                                    oss <<"Customer Inventory number "<< i << ") " << store->customer(i) << "\n\n";   
+                                    oss <<"Customer Inventory number "<< i << ") \n-------\n" << store->customer(i) << "\n\n";   
                                      y = 0;
                                      set_data(oss.str());
                                      set_msg("Search completed");
@@ -388,6 +415,7 @@ void Mainwin::on_view_desktop_click()
 }
 void Mainwin::on_view_customer_click()
 {
+        
        std::ostringstream oss;
        oss<<"CUSTOMER LIST:\n\n";
         for(int i=0; i<store->num_customers(); ++i) 
@@ -846,6 +874,7 @@ void Mainwin::on_new_store_click()
     delete store;
     store = new Store{};
     filename = "untitled.elsa";
+    
     set_data("WELCOME TO MY STORE FOR SPRINT 4\n\nHow can i help you today?");
     set_msg("NEW STORE CREATED");
 }
