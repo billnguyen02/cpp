@@ -7,7 +7,8 @@
 #include "Order.h"
 #include "Ram.h"
 #include "cpu.h"
-
+#include "Disk.h"
+#include <string>
 class Store {
   public:
     Store();
@@ -25,6 +26,9 @@ class Store {
     int new_desktop(); // returns index
     void add_option(int option, int desktop); // to desktop
     int num_desktops();
+    
+    
+    int find_dekstop(int option);
     Desktop& desktop(int index);
 
     int new_order(int customer); // returns order number

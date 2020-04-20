@@ -33,7 +33,7 @@ Ram::Ram(std::istream& ist)
     
     double num_cost = stod(cost);
     int    num_gb  = stoi(gb);
-  //  Ram Ram {name,num_cost,num_gb};
+  
     _name = name;
     _cost = num_cost;
     _gb = num_gb;

@@ -24,7 +24,14 @@ void Store::remove_option(int index)
       options.erase(options.begin()+index);
     }
 
+    int size2 = desktops.size();
+    for(int i = 0; i < size2;i++)
+    {
+        desktops.at(i).fix_option(index);      
+    }
+
 }
+
 int Store::num_options() {return options.size();}
 Options& Store::option(int index) {return *options.at(index);}
 
@@ -38,6 +45,9 @@ int Store::new_desktop() {
 void Store::add_option(int option, int desktop) { // to desktop
     desktops.at(desktop).add_option(*options.at(option));
 }
+
+
+
 int Store::num_desktops() {return desktops.size();}
 Desktop& Store::desktop(int index) {return desktops.at(index);}
 
@@ -52,6 +62,7 @@ int Store::new_order(int customer) {
 void Store::add_desktop(int desktop, int order) { // to order
     orders.at(order).add_product(desktops.at(desktop));
 }
+
 int Store::num_orders() {return orders.size();}
 Order& Store::order(int index) {return orders.at(index);}
 
@@ -110,6 +121,7 @@ Store::Store(std::istream& ist){
     std::string R_char = "R";
     std::string O_char = "O";
     std::string C_char = "C";
+    std::string D_char = "D";
     std::string R;
 
     if(size2>0)
@@ -121,33 +133,30 @@ Store::Store(std::istream& ist){
             {         
                 Ram Ram{ist};
                 options.push_back(Ram.ptr());
-                if(!ist) throw std::runtime_error("HAHA");
-            }
-            else if( R.compare(O_char)==0)
-            {
-                Options* Option = new Options {ist};
-                options.push_back(Option);
-                if(!ist) throw std::runtime_error("HAHA");
+                if(!ist) throw std::runtime_error("R char");
             }
              else if( R.compare(C_char)==0)
             {
                 CPU CPU{ist};
                 options.push_back(CPU.ptr());
-                if(!ist) throw std::runtime_error("HAHA");
-            }           
+                if(!ist) throw std::runtime_error("C char");
+            } 
+             else if( R.compare(O_char)==0)
+            {
+                Options* Option = new Options {ist};
+                options.push_back(Option);
+                if(!ist) throw std::runtime_error("O char");
+            }     
+            else if(R.compare(D_char)==0)
+            {
+                Disk Disk{ist};
+                options.push_back(Disk.ptr());
+                if(!ist) throw std::runtime_error("D char");
+            }     
         }
     }
 
-    // else if(size2>0 && R.compare(letter)!=0)
-   
-    // {
-    //     for ( int i = 0 ; i<size2;i++)
-    //     {
-    //         Options* Option = new Options {ist};
-    //         options.push_back(Option);
-    //         if(!ist) throw std::runtime_error("HAHA");
-    //     }
-    // }
+
 
     int size_desktop;
     //DESKTOP

@@ -20,6 +20,7 @@ class Options
         Options(std::istream& ist);
         virtual Options* ptr() const;
         Options();
+        std::string search();
 };
 
 

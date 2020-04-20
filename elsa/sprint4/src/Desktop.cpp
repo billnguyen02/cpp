@@ -14,6 +14,13 @@ int Desktop::size()
 {
      return _options.size();
 }
+void Desktop::fix_option(int option)
+{
+   
+    _options.erase(_options.begin()+option);
+    
+    //return *_options.at(option);
+}
 std::ostream& operator<<(std::ostream& ost, const Desktop& desktop)
 {
     ost<<"Dektop List: \n";

@@ -17,6 +17,7 @@ class Desktop
         Desktop(std::istream& ist);
         Desktop();
         int size();
+        void fix_option(int option);
     private:
         std::vector< Options*> _options;
 };

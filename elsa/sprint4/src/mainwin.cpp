@@ -20,7 +20,9 @@ Mainwin::Mainwin() :store{new Store} {
     // Put a vertical box container as the Window contents
     Gtk::Box *vbox = Gtk::manage(new Gtk::VBox);
     add(*vbox);
-	
+ 
+
+
 	Gtk::MenuBar *menubar = Gtk::manage(new Gtk::MenuBar);
 	vbox->pack_start(*menubar, Gtk::PACK_SHRINK, 0);
 	//FILE menu item
@@ -108,22 +110,42 @@ Mainwin::Mainwin() :store{new Store} {
     menuitem_insert_customer->signal_activate().connect([this] {this->on_insert_customer_click();});
     insertmenu->append(*menuitem_insert_customer);
 
-    //REMOVE ----------------------------------------------
+    ///////////////
+    //Remove menu Item
+    ////////////////
     Gtk::MenuItem *menuitem_remove = Gtk::manage(new Gtk::MenuItem("_Remove", true));
     menubar->append(*menuitem_remove);
 
     Gtk::Menu *remove_menu = Gtk::manage(new Gtk::Menu());
-
     menuitem_remove->set_submenu(*remove_menu);
+    //@@@@@  REMOVE  PERIPHERAL @@@@@@@
     Gtk::MenuItem *remove_peripheral = Gtk::manage(new Gtk::MenuItem("_Peripheral", true));
     remove_peripheral->signal_activate().connect([this]{this->on_remove_peripheral_click();});
     remove_menu->append(*remove_peripheral);
 
 
 
+    ///////////////
+    //SEARCH menu Item
+    ////////////////
+    Gtk::MenuItem *menuitem_search = Gtk::manage(new Gtk::MenuItem("_Search", true));
+    menubar->append(*menuitem_search);
+    Gtk::Menu *searchmenu = Gtk::manage(new Gtk::Menu());
+    menuitem_search->set_submenu(*searchmenu);
+    //@@@@@  Search PERIPHERAL @@@@@@@ 
+    Gtk::MenuItem *menuitem_search_peripheral = Gtk::manage(new Gtk::MenuItem("_Peripheral", true));
+    menuitem_search_peripheral->signal_activate().connect([this] {this->on_find_peripheral_click();});
+    searchmenu->append(*menuitem_search_peripheral);
+    //@@@@@  SEARCH CUSTOMER  @@@@@@@
+    Gtk::MenuItem *menuitem_search_customer = Gtk::manage(new Gtk::MenuItem("_Customer", true));
+    menuitem_search_customer->signal_activate().connect([this] {this->on_find_customer_click();});
+    searchmenu->append(*menuitem_search_customer);
+    
+
     ////////////////////
     //HELP menu item
     //////////////////
+
     Gtk::MenuItem *menuitem_help = Gtk::manage(new Gtk::MenuItem("_Help", true));
     menubar->append(*menuitem_help);
     Gtk::Menu *helpmenu = Gtk::manage(new Gtk::Menu());
@@ -143,6 +165,56 @@ Mainwin::Mainwin() :store{new Store} {
   
     data = Gtk::manage(new Gtk::Label{"", Gtk::ALIGN_START, Gtk::ALIGN_START});
     data->set_hexpand();
+
+
+    ////////////////////
+    //TOOL BAR 
+    //////////////////
+    Gtk::Toolbar *toolbar = Gtk::manage(new Gtk::Toolbar);
+    vbox->pack_start(*toolbar, Gtk::PACK_SHRINK, 0);
+    vbox->add(*toolbar); 
+
+    //create a tool bar button then append onto tool bar with an gtk::stock::new
+    Gtk::ToolButton *new_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::NEW));
+    new_store_button->set_tooltip_markup("Create a new store, discarding any in progress");
+    new_store_button->signal_clicked().connect([this] {this->on_new_store_click();});
+    toolbar->append(*new_store_button);
+    //create a save tool bar button then append onto tool bar with an gtk::stock:save
+    Gtk::ToolButton *save_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::SAVE));
+    save_store_button->set_tooltip_markup("Save The Current Process");
+    save_store_button->signal_clicked().connect([this] {this->on_save_click();});
+    toolbar->append(*save_store_button);
+
+    //create a tool bar button for on disk click that show the disk saved
+    Gtk::ToolButton *load__disk_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::PASTE));
+    load__disk_store_button->set_tooltip_markup("Load Saved Disk Memory");
+    load__disk_store_button->signal_clicked().connect([this] {this->on_disk_click();});
+    toolbar->append(*load__disk_store_button);
+
+    //create a tool bar button for saved CPU
+    Gtk::ToolButton *load__CPU_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::PASTE));
+    load__CPU_store_button->set_tooltip_markup("Load Saved CPU Memory");
+    load__CPU_store_button->signal_clicked().connect([this] {this->on_CPU_click();});
+    toolbar->append(*load__CPU_store_button);
+
+    Gtk::ToolButton *Search_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::FIND));
+    Search_store_button->set_tooltip_markup("Quick Inventory Check");
+    Search_store_button->signal_clicked().connect([this] {this->on_find_peripheral_click();});
+    toolbar->append(*Search_store_button);
+
+
+    //Create the seperate tool bar all the way on the other side for quit toolbar button
+    Gtk::SeparatorToolItem *sep = Gtk::manage(new Gtk::SeparatorToolItem());
+    sep->set_expand(true);
+    toolbar->append(*sep);
+    //Create a quit tool bar button
+    Gtk::ToolButton *quit_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::QUIT));
+    quit_store_button->set_tooltip_markup("Quit the current process");
+    quit_store_button->signal_clicked().connect([this] {this->on_quit_click();});
+    toolbar->append(*quit_store_button);
+
+    
+
 
     // A Gtk::Label is intrinsically transparent - it's background color cannot be set
     // Therefore, we add it to a Gtk::EventBox with background color overridden to white
@@ -179,7 +251,61 @@ void Mainwin::on_disk_click()
     o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
     o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
      on_view_peripheral_click();
+     set_msg("Load saved disk successfully");
 }
+void Mainwin::on_find_peripheral_click()
+{
+            std::ostringstream oss;
+            Gtk::Dialog dialog{"Inventory Check", *this};
+            Gtk::Grid grid;
+
+            Gtk::Label l_pname{"Enter Product Name"};
+            Gtk::Entry e_pname;               // Accept any line of text
+
+          
+            grid.attach(l_pname, 0, 1, 1, 1);
+            grid.attach(e_pname, 1, 1, 2, 1);
+              dialog.get_content_area()->add(grid);
+            dialog.show_all();
+            dialog.add_button("Select", Gtk::RESPONSE_OK);
+            dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+            int response;
+            dialog.show_all();
+            int y = -1;
+            while((response = dialog.run()) != Gtk::RESPONSE_CANCEL)
+                 {        
+                    if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                                          
+                        std::string name = e_pname.get_text();
+                         
+                        for(int i=0; i<store->num_options(); ++i) 
+                            {
+                                
+                                if(name.compare(store->option(i).search())==0)
+                                {
+                                    oss<<"Item found:\n\n";
+                                    oss << i << ") " << store->option(i) << "\n";   
+                                     y = 0;
+                                     set_data(oss.str());
+                                     set_msg("Search completed");
+                                    
+                                }  
+
+                            }
+
+
+
+                    if(y==-1)
+                    {
+                        set_data("No Item Found, Sorry for the Inconvenience");
+                        set_msg("No Item in inventory");
+                    }
+
+                }
+               
+}
+void Mainwin::on_find_customer_click(){}
 void Mainwin::on_CPU_click()
 {
     Options o{"CPU: 2.6 GHz Xeon 6126T", 2423.47};         store->add_option(o);
@@ -203,6 +329,7 @@ void Mainwin::on_CPU_click()
     o = Options{"2 TB Hybrid Disk", 59.99};                store->add_option(o);
     o = Options{"4 TB Hybrid Disk", 93.98};                store->add_option(o);
     on_view_peripheral_click();    
+    set_msg("Load saved CPU successfully");
 }
 void Mainwin::on_view_peripheral_click()
 {
@@ -259,6 +386,7 @@ void Mainwin::on_insert_peripheral_click()
     opt.add_button("RAM",1);
     opt.add_button("Other",2);
     opt.add_button("CPU",3);
+    opt.add_button("Disk",4);
     
     int res ;
     if(opt.run() == 1)
@@ -406,12 +534,78 @@ void Mainwin::on_insert_peripheral_click()
                 
             // Options option{name,cost};
                 store->add_option(CPU);
-            
+
                 on_view_peripheral_click(); 
                 set_msg("Added peripheral " + name);
 
             }
         }
+         if(opt.run() == 4)
+    {
+            Gtk::Dialog dialog2{"INSERT DISK RATT TA TA", *this};
+            Gtk::Grid grid;
+
+            Gtk::Label l_pname{"Product Name"};
+            Gtk::Entry e_pname;               // Accept any line of text
+
+            grid.attach(l_pname, 0, 1, 1, 1);
+            grid.attach(e_pname, 1, 1, 2, 1);
+
+            Gtk::Label l_pcost{"Product Cost"};
+            Gtk::Entry e_pcost;               // Accept any line of text
+
+            grid.attach(l_pcost, 0, 2, 1, 1);
+            grid.attach(e_pcost, 1, 2, 2, 1);
+
+            Gtk::Label l_gb{" Amount "};
+            Gtk::Entry e_gb; 
+
+            grid.attach(l_gb, 0, 3, 1, 1);
+            grid.attach( e_gb, 1, 3, 2, 1);       
+
+            Gtk::Label l_type{"Type"};
+            Gtk::ComboBoxText c_type;      // A drop-down with NO Entry (false is default)
+            c_type.append("GB-Gigabyte");       // Row 0
+            c_type.append("TB-TeraByte");         // Row 1
+            c_type.set_active(0);          // Specify the pre-selected default
+
+            grid.attach(l_type, 0, 4, 1, 1);
+             grid.attach(c_type, 1, 4, 2, 1);
+            // Now add the grid to the dialog's VBox (called its "content area")
+            dialog2.get_content_area()->add(grid);
+
+        
+            dialog2.add_button("Select", Gtk::RESPONSE_OK);
+            dialog2.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+            int response;
+            dialog2.show_all();
+            while((response = dialog2.run()) != Gtk::RESPONSE_CANCEL) 
+             {            
+                if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                else if (e_pcost.get_text().size() == 0) {e_pcost.set_text("*required*"); continue;}
+                else if (e_gb.get_text().size() == 0) {e_gb.set_text("*required*"); continue;}
+                
+                    
+                std::string name = e_pname.get_text();
+                std::string num_cost  = e_pcost.get_text();
+                std::string num_gb = e_gb.get_text();
+                std::string type=(c_type.get_active_row_number() ? "TB" : "GB");
+
+                double amount = get_double(num_gb);
+                double cost = get_double(num_cost);
+
+                Disk Disk{name,cost,amount,type};
+            
+                Options& opt = Disk;
+                
+            // Options option{name,cost};
+                store->add_option(opt);
+            
+                on_view_peripheral_click(); 
+                set_msg("Added peripheral " + name);
+            }
+    }
 
    
 }
@@ -623,6 +817,7 @@ void Mainwin::on_save_click(){
              
             std::ofstream ofs{filename};
             store->save(ofs);
+            set_msg("SAVE THE CURRENT PROCESS");
             
             if(!ofs) throw std::runtime_error{"Error writing file"};
         } catch(std::exception& e) {
@@ -755,13 +950,13 @@ void Mainwin::on_remove_peripheral_click()
             { try {
             
                 store->remove_option(val);
-                
+               // store->find_dekstop(val);
                 on_view_peripheral_click();
                 set_msg("Removed Option ("+str+")");
 
         } catch (std::exception& e) {
-                Gtk::MessageDialog{*this, "WRONG INDEX"}.run();
-          
+                Gtk::MessageDialog{*this, "Done"}.run();
+                on_view_peripheral_click();
             }
         }
     }
