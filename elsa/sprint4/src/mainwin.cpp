@@ -294,7 +294,7 @@ void Mainwin::on_find_peripheral_click()
                     if(y==-1)
                     {
                         set_data("No Item Found, Sorry for the Inconvenience");
-                        set_msg("No Item in inventory");
+                        set_msg("Inventory Search Completed");
                     }
                 }
                
@@ -304,7 +304,6 @@ void Mainwin::on_find_customer_click()
             std::ostringstream oss;
             Gtk::Dialog dialog{"Customer Search", *this};
             Gtk::Grid grid;
-
             Gtk::Label l_pname{"Enter Customer Name"};
             Gtk::Entry e_pname;               // Accept any line of text
 
@@ -338,8 +337,8 @@ void Mainwin::on_find_customer_click()
                             }
                     if(y==-1)
                     {
-                        set_data("No Item Found, Sorry for the Inconvenience");
-                        set_msg("No Item in inventory");
+                        set_data("No Customer Found, Sorry for the Inconvenience");
+                        set_msg("Customer Search Completed");
                     }
 
                 }
@@ -628,7 +627,7 @@ void Mainwin::on_insert_peripheral_click()
                 std::string name = e_pname.get_text();
                 std::string num_cost  = e_pcost.get_text();
                 std::string num_gb = e_gb.get_text();
-                std::string type=(c_type.get_active_row_number() ? "TB" : "GB");
+                std::string type=(c_type.get_active_row_number() ? "TB" : "GB" );
 
                 double amount = get_double(num_gb);
                 double cost = get_double(num_cost);
