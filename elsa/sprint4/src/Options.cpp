@@ -29,7 +29,7 @@ void Options::save(std::ostream& ost) const
     ost<<_name<<std::endl;
     ost<<_cost<<std::endl;
 }
-std::string Options::search()
+std::string Options::search() 
 {
     return _name;
 }

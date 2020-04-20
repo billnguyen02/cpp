@@ -27,3 +27,7 @@ Customer::Customer(std::istream& ist)
     getline(ist,_email);
     getline(ist,_phone);
 }
+std::string Customer::search()
+{
+    return _name;
+}

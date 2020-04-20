@@ -10,7 +10,7 @@ Disk::~Disk(){}
 
 std::string Disk::to_string() const
 {
-    return _name + "$ "+ std::to_string(_cost) +"\nCapacity: " + std::to_string(_storage)+ " ("+_type+")";
+    return _name + "$ "+ std::to_string(_cost) +"     Capacity: " + std::to_string(_storage)+ " ("+_type+")";
 }
 void Disk::save(std::ostream& ost)const
 {

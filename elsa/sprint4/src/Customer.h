@@ -14,6 +14,7 @@ class Customer
         friend std::ostream& operator<<(std::ostream& ost, const Customer& Cus);
         void save(std::ostream& ost);
         Customer(std::istream& ist);
+        std::string search();
 };
 
 #endif

@@ -285,17 +285,57 @@ void Mainwin::on_find_peripheral_click()
                                 if(name.compare(store->option(i).search())==0)
                                 {
                                     oss<<"Item found:\n\n";
-                                    oss << i << ") " << store->option(i) << "\n";   
+                                    oss << "Inventory number "<< i << ") " << store->option(i) << "\n\n";   
+                                     y = 0;
+                                     set_data(oss.str());
+                                     set_msg("Search completed");                                 
+                                }  
+                            }
+                    if(y==-1)
+                    {
+                        set_data("No Item Found, Sorry for the Inconvenience");
+                        set_msg("No Item in inventory");
+                    }
+                }
+               
+}
+void Mainwin::on_find_customer_click()
+{
+            std::ostringstream oss;
+            Gtk::Dialog dialog{"Customer Search", *this};
+            Gtk::Grid grid;
+
+            Gtk::Label l_pname{"Enter Customer Name"};
+            Gtk::Entry e_pname;               // Accept any line of text
+
+          
+            grid.attach(l_pname, 0, 1, 1, 1);
+            grid.attach(e_pname, 1, 1, 2, 1);
+            dialog.get_content_area()->add(grid);
+            dialog.show_all();
+            dialog.add_button("Select", Gtk::RESPONSE_OK);
+            dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+            int response;
+            dialog.show_all();
+            int y = -1;
+            while((response = dialog.run()) != Gtk::RESPONSE_CANCEL)
+                 {        
+                    if (e_pname.get_text().size() == 0) {e_pname.set_text("*required*"); continue;}
+                                          
+                        std::string name = e_pname.get_text();
+                         
+                        for(int i=0; i<store->num_customers(); ++i) 
+                            {                             
+                                if(name.compare(store->customer(i).search())==0)
+                                {
+                                    oss<<"Customer found:\n\n";
+                                    oss <<"Customer Inventory number "<< i << ") " << store->customer(i) << "\n\n";   
                                      y = 0;
                                      set_data(oss.str());
                                      set_msg("Search completed");
-                                    
                                 }  
-
                             }
-
-
-
                     if(y==-1)
                     {
                         set_data("No Item Found, Sorry for the Inconvenience");
@@ -303,9 +343,7 @@ void Mainwin::on_find_peripheral_click()
                     }
 
                 }
-               
 }
-void Mainwin::on_find_customer_click(){}
 void Mainwin::on_CPU_click()
 {
     Options o{"CPU: 2.6 GHz Xeon 6126T", 2423.47};         store->add_option(o);
