@@ -840,7 +840,7 @@ std::string Mainwin::get_string(std::string prompt)
 
 }
 double Mainwin::get_double(std::string prompt) {
-    try {
+try {
         return std::stod(prompt);
     } catch(std::exception& e) {
         
@@ -987,11 +987,12 @@ void Mainwin::on_remove_peripheral_click()
                    // Accept any line of text
     int res;
     dialog.show_all();
-    while(res = dialog.run() != 0)
+    int y = -1;
+    while(res = dialog.run() == 1)
     {
         if (e_num.get_text().size() == 0) {e_num.set_text("*required*"); continue;}
         std::string str = e_num.get_text();
-        if(!isdigit(str[0]))
+         if(!isdigit(str[0]))
         {
             e_num.set_text("*Please Enter A Valid Number*");
             set_msg("*Please Enter A Valid Number*");
@@ -999,30 +1000,26 @@ void Mainwin::on_remove_peripheral_click()
         }
 
         else if(isdigit(str[0]))
-        {
+        {   
             int val = get_int(str);
             int size = store->num_options();
-            if (val > size)
-            {
-                e_num.set_text("*Index is out of Range*");
-                continue;
+            if( val <= size)
+            { 
+                y=1;
                 
-            }
-            else if( val <= size)
-            { try {
-            
                 store->remove_option(val);
                // store->find_dekstop(val);
                 on_view_peripheral_click();
                 set_msg("Removed Option ("+str+")");
+                
+             }
 
-        } catch (std::exception& e) {
-                Gtk::MessageDialog{*this, "Done"}.run();
-                on_view_peripheral_click();
+            else if(y==-1)
+            {
+            set_data("Index is out of Range");
+                set_msg("Remove Completed");
             }
-        }
-    }
     }
 
-
+    }
 }
