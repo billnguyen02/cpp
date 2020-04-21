@@ -29,17 +29,8 @@ void Options::save(std::ostream& ost) const
     ost<<_name<<std::endl;
     ost<<_cost<<std::endl;
 }
-void Options::set_color(std::string c)
-{
-    std::string * ptr = new std::string{};
-    ptr =  &c;
 
-    _color = *ptr;
-}
-std::string Options::get_color()
-{
-    return _color;
-}
+
 std::string Options::search() 
 {
     return _name;

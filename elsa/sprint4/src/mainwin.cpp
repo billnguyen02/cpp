@@ -6,7 +6,7 @@
 #include <fstream>
 
 
-Mainwin::Mainwin() :store{new Store},eb{new Gtk::EventBox} {
+Mainwin::Mainwin() :store{new Store}, eb{new Gtk::EventBox}, scrolled_window{new Gtk::ScrolledWindow} {
 
     // /////////////////
     // G U I   S E T U P
@@ -186,7 +186,10 @@ Mainwin::Mainwin() :store{new Store},eb{new Gtk::EventBox} {
     toolbar->append(*save_store_button);
 
     //create a tool bar button for on disk click that show the disk saved
-    Gtk::ToolButton *load__disk_store_button = Gtk::manage(new Gtk::ToolButton(Gtk::Stock::PASTE));
+    Gtk::Image *button_disk_image = Gtk::manage(new Gtk::Image("disk.jpg"));
+    //	button_disk_image->set_pixel_size(3);
+
+    Gtk::ToolButton *load__disk_store_button = Gtk::manage(new Gtk::ToolButton(*button_disk_image));
     load__disk_store_button->set_tooltip_markup("Load Saved Disk Memory");
     load__disk_store_button->signal_clicked().connect([this] {this->on_disk_click();});
     toolbar->append(*load__disk_store_button);
@@ -210,7 +213,6 @@ Mainwin::Mainwin() :store{new Store},eb{new Gtk::EventBox} {
     toolbar->append(*color_store_button);
 
 
-
     //Create the seperate tool bar all the way on the other side for quit toolbar button
     Gtk::SeparatorToolItem *sep = Gtk::manage(new Gtk::SeparatorToolItem());
     sep->set_expand(true);
@@ -221,20 +223,14 @@ Mainwin::Mainwin() :store{new Store},eb{new Gtk::EventBox} {
     quit_store_button->signal_clicked().connect([this] {this->on_quit_click();});
     toolbar->append(*quit_store_button);
 
-   
 
-    
-
-    // A Gtk::Label is intrinsically transparent - it's background color cannot be set
-    // Therefore, we add it to a Gtk::EventBox with background color overridden to white
-    
-    //Gtk::EventBox *eb = Gtk::manage(new Gtk::EventBox);
-    eb->set_hexpand();
-
-    
+    // SCROLLED WINDOW
+    scrolled_window->add(*data);
+    eb->set_hexpand(); 
     eb->override_background_color(Gdk::RGBA("white"));
-    eb->add(*data);
-    // PACK_EXPAND_WIDGET tells VBox this widget should be as big as possible
+    eb->add(*scrolled_window);
+
+
     vbox->pack_start(*eb, Gtk::PACK_EXPAND_WIDGET, 0);
     
     // S T A T U S   B A R   D I S P L A Y ////////////////////////////////////

@@ -22,8 +22,7 @@ class Options
         virtual Options* ptr() const;
         Options();
         std::string search();
-        std::string get_color();
-        void set_color(std::string c);
+
 };
 
 

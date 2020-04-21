@@ -16,6 +16,7 @@ class Mainwin : public Gtk::Window
 		std::string filename;
 		std::string _color;
 		Gtk::EventBox *eb;
+		Gtk::ScrolledWindow *scrolled_window;
     protected:
 		void on_disk_click();
 		void on_CPU_click();
