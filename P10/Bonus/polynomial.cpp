@@ -1,10 +1,5 @@
 #include "polynomial.h"
 #include <cmath>
-#include <mutex>
-#include <thread>
-#include <array>
-
-std::mutex m;
 
 Polynomial::Polynomial() { }
 Polynomial::Polynomial(std::istream& ist) {
@@ -15,7 +10,10 @@ void Polynomial::save(std::ostream& ost) {
     ost << _terms.size() << '\n';
     for(auto t : _terms) t.save(ost);
 }
-
+Polynomial* Polynomial::get_ptr()
+{
+    return new Polynomial {*this};
+}
 void Polynomial::add_term(double coefficient, double exponent) {
     _terms.push_back(Term{coefficient, exponent});
 }
@@ -25,32 +23,10 @@ double Polynomial::operator()(double x) {
     return y;
 }
 
-// FULL CREDIT
-// Modify solve and solve_recursive to split the range [min,max]
-//   into distinct ranges [min, min+(max-min)/slices] ... [max-(max-min)/slices, max]
-//   and run solve_recursive once per range, **each as a thread**
-// Then complete the questionaire in file results.txt and commit with your code
-
 // Clear the roots and invoke recursive solution search
-//   nthreads is the number of threads requested
-//   tid is a thread id - useful for logger.h messages
-void Polynomial::solve(double min, double max, int const nthreads, double slices, double precision) {
+void Polynomial::solve(double min, double max, int nthreads, double slices, double precision) {
     _roots = {};
-    
-    std::thread t[nthreads];
-    double x = (max - min) / nthreads;
-    slices = slices/nthreads;
-    for(int i = 0; i < nthreads; i++)
-    {  
-        t[i] =  std::thread {[=]{this->solve_recursive(min, min + x ,i,slices,precision);}};     
-        min = min+x;
-    }
-    
-    for(int i = 0; i < nthreads; i++)
-    {
-        t[i].join();
-    }
-
+    solve_recursive(min, max, 1, slices, precision);
 }
 // (Internal) recursive search for polynomial solutions
 void Polynomial::solve_recursive(double min, double max, int tid, double slices, double precision, int recursions) {
@@ -65,14 +41,9 @@ void Polynomial::solve_recursive(double min, double max, int tid, double slices,
         y2 = f(x2);
         if(std::signbit(y1) != std::signbit(y2)) {
             if((abs(f(x1+x2)/2) > precision) && ((x2 - x1) > precision) && (recursions < 20)) {
-             
-                solve_recursive(x1, x2, tid, std::min(slices, (x2-x1)/precision), precision, recursions+1);
-            
-                // recurse for more precision
+                solve_recursive(x1, x2, tid, std::min(slices, (x2-x1)/precision), precision, recursions+1); // recurse for more precision
             } else {
-                m.lock();
                 _roots.push_back((x1+x2)/2);
-                m.unlock();
             }
         }
         x1 = x2; 
@@ -87,5 +58,6 @@ std::ostream& operator<<(std::ostream& ost, const Polynomial& polynomial) {
     for(auto& t : polynomial._terms) ost << t;
     return ost;
 }
+
 
 

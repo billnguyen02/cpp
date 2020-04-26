@@ -45,12 +45,14 @@ void Polynomial::solve(double min, double max, int const nthreads, double slices
         t[i] =  std::thread {[=]{this->solve_recursive(min, min + x ,i,slices,precision);}};     
         min = min+x;
     }
-    
     for(int i = 0; i < nthreads; i++)
     {
         t[i].join();
     }
-
+}
+Polynomial* Polynomial::get_ptr()
+{
+    return new Polynomial {*this};
 }
 // (Internal) recursive search for polynomial solutions
 void Polynomial::solve_recursive(double min, double max, int tid, double slices, double precision, int recursions) {
@@ -60,14 +62,13 @@ void Polynomial::solve_recursive(double min, double max, int tid, double slices,
     double y1 = f(min);
     double x2 = x1 + delta;
     double y2;
-
     while(x1 < max) {
         y2 = f(x2);
         if(std::signbit(y1) != std::signbit(y2)) {
             if((abs(f(x1+x2)/2) > precision) && ((x2 - x1) > precision) && (recursions < 20)) {
-             
+                
                 solve_recursive(x1, x2, tid, std::min(slices, (x2-x1)/precision), precision, recursions+1);
-            
+                
                 // recurse for more precision
             } else {
                 m.lock();
