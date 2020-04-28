@@ -36,16 +36,14 @@ double Polynomial::operator()(double x) {
 //   tid is a thread id - useful for logger.h messages
 void Polynomial::solve(double min, double max, int const nthreads, double slices, double precision) {
     _roots = {};
-    
+    Polynomial* ptr = this;
     std::thread t[nthreads];
     double x = (max - min) / nthreads;
-    slices = slices/nthreads;
     for(int i = 0; i < nthreads; i++)
     {  
-        t[i] =  std::thread {[=]{this->solve_recursive(min, min + x ,i,slices,precision);}};     
-        min = min+x;
+         t[i] =  std::thread {[=]{ptr->solve_recursive(min,min+x ,i,slices/nthreads,precision);}};     
+         min = min+x;        
     }
-    
     for(int i = 0; i < nthreads; i++)
     {
         t[i].join();

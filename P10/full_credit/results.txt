@@ -1,5 +1,5 @@
 QUESTION 1: Which value of slices did you select for your machine to solve the polynomial with 1 thread with at least a 30 second runtime: 
-
+a little over double than what was given in the polynomial.h file (200 000 000)
 
 QUESTION 2: Provide the output of ``time polyb nn`` (or the improved version in the lecture video, if you prefer) for the following values of nn threads shown below:
 
@@ -7,66 +7,79 @@ Example Timing:
 
 real	0m22.551s
 user	0m22.524s
-sys	0m0.012s
+sys	    0m0.012s
 
 
 YOUR Timing:
 
 Without threads:
 
-
+real     0m14.392s
+user     0m14.39s
+system   0.00s
 
 
 With 2 threads:
 
-
-
+real     0m8.212s
+user     0m15.86s
+system   0.01s
 
 
 
 With 4 threads:
 
-
-
+real     0m6.968s
+user     0m22.89s
+system   0.12s
 
 
 
 With 6 threads:
 
-
-
+real     0m6.585s
+user     0m23.38s
+system   0.10s
 
 
 
 With 8 threads:
 
-
-
+real     0m6.753s
+user     0m23.50s
+system   0.12s
 
 
 
 With 12 threads:
 
-
-
-
+real     0m6.897s
+user     0m23.56s
+system   0.08s
 
 
 With 24 threads:
 
-
+real     0m6.920s
+user     0m23.51s
+system   0.09s
 
 
 
 QUESTION 3: Does adding more threads continue to speed up the program? Do more threads ever slow down the program slightly?  Why or why not?
 
+adding more threads does speed up the real time for a little while at the beginning but not after 4 threads
+Why?
 
-
+    I belive the reason why after 4 threads the time stay the same was because the number of threads exceed the number of CPU availble, on my CPU it said around between 300% and 400%. 
 
 
 QUESTION 4: Does adding more threads increase the "system load", or is it constant regardless of the number of threads?  Why?
 
-
+    Yes, Adding additional threads can increase throughput. At some point, too many threads will reduce throughput. 
+    This occurs because the system is spending time managing each thread. Threads that are in a ready state to be run 
+    are now waiting for an available CPUs to run their own time slice. The thread will take longer to complete because it is
+    spending more time waiting for a CPU. After a saturation point is reached, adding more threads can continue to reduce total throughput.
 
 
 

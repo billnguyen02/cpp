@@ -22,8 +22,6 @@ int main() {
     str.push_back("untitled.poly");
     str.push_back("poly2.poly");
 
-  
-    
     std::vector <Polynomial> Po;
     for(int i = 0; i < 2; i ++)
     {
