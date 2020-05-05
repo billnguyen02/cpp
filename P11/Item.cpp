@@ -1,6 +1,6 @@
 #include "Item.h"
 
-#include "Item.h"
+
 Item::Item(){}
 Item::Item(std::string n,double p):_name(n),_price(p){}
 double Item::cost(){return _price;};
@@ -23,7 +23,7 @@ std::istream& operator>>(std::istream& ist, Item& item)
            std::istringstream ss(line);
             while(getline(ss,word,' '))
                 {
-                 str.push_back(word);
+                  str.push_back(word);
                 }
             size = str.size();
   
