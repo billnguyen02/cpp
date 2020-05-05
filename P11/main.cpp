@@ -5,11 +5,11 @@
 int main(){
     std::cout << "Enter product names and price  (e.g., English peas 0.79 ):" << std::endl;
     std::string line;
-    Item null{"",0.000};
+    Item clone{"empty",0.000};
     Cart cart{"BILL"};
-    while(std::cin >> null)
+    while(std::cin >> clone)
     {
-        cart.add_item(null);                     
+        cart.add_item(clone);                     
     }
  
     std::cout<< "\nRegister Receipt\n"<<std::endl;
@@ -21,6 +21,6 @@ int main(){
     double total;
     total = cart.cost();
     std::cout<<"------------------------------"<<std::endl;
-    std::cout<< "$      "<<std::setprecision(4)<<total<<"   Total Cost";
+    std::cout<< "$      "<<std::setprecision(4)<<total<<"    Total Cost"<<std::endl;
 
 }
