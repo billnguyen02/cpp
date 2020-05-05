@@ -17,6 +17,7 @@ class Item
         Item();
         Item(std::string name, double price);
         double cost();
+        std::string name();
         friend std::ostream& operator<<(std::ostream& ost, Item* item);
         friend std::istream& operator>>(std::istream& ist, Item& item);
 };

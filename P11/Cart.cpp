@@ -2,12 +2,18 @@
 Cart::Cart(std::string c):_customer(c){}
 Cart::~Cart(){}
 Cart::Cart(const Cart& cart): _customer{cart._customer}{
-    for(Item* i : cart._item)
-        _item.push_back ( new Item{*i} );
+    int size = cart._item.size();
+    for( int i = 0; i < size ; i++)
+        _item.push_back ( new Item{*cart._item.at(i)} );
 }
 void Cart::add_item(Item &item)
 {
-    _item.push_back(new Item{item});
+    std::string n = item.name();
+    if(n.compare("NULL")!=0)
+    {
+        _item.push_back(new Item{item});
+    }
+    
 }
 double Cart::cost()
 {
